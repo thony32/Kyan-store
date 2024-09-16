@@ -5,6 +5,7 @@ import ReactLenis from 'lenis/react'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from 'react-error-boundary'
+import { HelmetProvider } from 'react-helmet-async'
 import ErrorFallback from './components/errors/error-boundary'
 import { routeTree } from './routeTree.gen'
 
@@ -27,7 +28,9 @@ if (!rootElement.innerHTML) {
             <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <QueryClientProvider client={queryClient}>
                     <ReactLenis root>
-                        <RouterProvider router={router} />
+                        <HelmetProvider>
+                            <RouterProvider router={router} />
+                        </HelmetProvider>
                     </ReactLenis>
                 </QueryClientProvider>
             </ErrorBoundary>
