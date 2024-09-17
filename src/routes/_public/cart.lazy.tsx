@@ -2,7 +2,6 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
-import getDiscountAmount from '@/utils/get-discount-amount'
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
 
@@ -190,13 +189,18 @@ function OrderList() {
                                 </Button>
                             </div>
                             <div className="flex justify-end">
-                                <Checkbox id={item.id} defaultChecked={item.included} onChange={() => includeItem(item)} className="rounded-[4px]" />
+                                <Checkbox
+                                    id={item.id}
+                                    defaultChecked={item.included}
+                                    onCheckedChange={() => includeItem(item)}
+                                    className="rounded-[4px]"
+                                />
                             </div>
                         </div>
                     </article>
                 ))}
             </div>
-            <div className="sticky top-40 h-fit">
+            <aside className="sticky top-40 h-fit">
                 <div className="bg-muted/20 rounded-2xl shadow-md p-4 flex flex-col gap-2">
                     <h3 className="font-medium text-lg text-center">Résumé de la commande</h3>
                     <hr />
@@ -218,7 +222,7 @@ function OrderList() {
                     </ul>
                     <Button className="mt-2">Procéder au paiement</Button>
                 </div>
-            </div>
+            </aside>
         </section>
     )
 }

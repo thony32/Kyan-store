@@ -2,7 +2,11 @@ import type { Product } from '@/types/api'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { persist } from 'zustand/middleware'
-import getDiscountAmount from '@/utils/get-discount-amount'
+
+// Assuming this function is available
+function getDiscountAmount(product: Product): number {
+    return Math.ceil((product.price * product.discount.percentage) / 10)
+}
 
 type Item = {
     quantity: number
@@ -49,9 +53,9 @@ export const useCartStore = create<CartState>()(
                 },
                 {
                     id: '2',
-                    name: 'Apple 2023 MacBook Air laptop with M2 chip: 38.91cm (15.3 inch) Liquid Retina display, 8GB RAM 512GB SSD storage, backlit keyboard, 1080p FaceTime HD camera,Touch ID Works with iPhone/iPad; Space Gray',
+                    name: 'Apple 2023 MacBook Air laptop with M2 chip: 38.91cm (15.3 inch) Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light.',
                     description:
-                        'IMPRESSIVELY BIG, IMPOSSIBLY THIN — The 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light. SUPERCHARGED BY M2 — Get more done faster with a powerful 8-core CPU, 10-core GPU and up to 24GB of unified memory',
+                        'IMPRESSIVELY BIG, IMPOSSIBLY THIN — The 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light.',
                     price: 1753,
                     stock: 20,
                     brand: 'Apple',
@@ -104,19 +108,19 @@ export const useCartStore = create<CartState>()(
                     }
                 })
             },
-            getTotal: () => {
-                const { items } = get()
+            getSubtotal: () => {
+                const items = get().items
                 return items.filter((item) => item.included).reduce((subtotal, item) => subtotal + item.price * item.quantity, 0)
             },
             getTotalDiscount: () => {
-                const { items } = get()
+                const items = get().items
                 return items
                     .filter((item) => item.included)
                     .reduce((totalDiscount, item) => totalDiscount + getDiscountAmount(item) * item.quantity, 0)
             },
-            getSubtotal: () => {
-                const { getTotal, getTotalDiscount } = get()
-                return getTotal() - getTotalDiscount()
+            getTotal: () => {
+                const { getSubtotal, getTotalDiscount } = get()
+                return getSubtotal() - getTotalDiscount()
             }
         })),
         {
