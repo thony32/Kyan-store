@@ -1,19 +1,22 @@
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
+import getDiscountAmount from '@/utils/get-discount-amount'
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
 
-export const Route = createLazyFileRoute('/cart')({
+export const Route = createLazyFileRoute('/_public/cart')({
     component: CartPage
 })
 
 function CartPage() {
-    const items = null
+    const items = useCartStore((state) => state.items)
     return (
         <main className="max-w-screen-lg mx-auto grid gap-y-6">
             <section className="sticky top-20 bg-white py-4 flex items-end justify-between">
                 <h1 className="text-4xl font-bold">
-                    Mon panier <small className="font-medium text-lg">(2 articles)</small>
+                    Mon panier <small className="font-medium text-lg">({items.reduce((sum, item) => sum + item.quantity, 0)} articles)</small>
                 </h1>
                 <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}>
                     <ArrowLeft className="size-4" /> Continuer mes achats
@@ -140,25 +143,78 @@ function EmptyOrder() {
 }
 
 function OrderList() {
+    const items = useCartStore((state) => state.items)
+    const incrementItem = useCartStore((state) => state.increment)
+    const decrementItem = useCartStore((state) => state.decrement)
+    const includeItem = useCartStore((state) => state.include)
+    const removeItem = useCartStore((state) => state.removeItem)
+    const getTotal = useCartStore((state) => state.getTotal)
+    const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
+    const getSubtotal = useCartStore((state) => state.getSubtotal)
+
     return (
         <section className="grid grid-cols-3 gap-6">
-            <div className="col-span-2">List</div>
+            <div className="col-span-2 space-y-4">
+                {items.map((item) => (
+                    <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
+                        <img src={item.images[0]} alt={item.name} className="w-full max-w-52 aspect-square object-contain" />
+                        <div className="flex flex-col gap-2">
+                            <h3 className="line-clamp-2">{item.name}</h3>
+                            <div className="text-muted-foreground text-sm">
+                                <p>Modèle: {item.model}</p>
+                                <p>Prix: ${item.price}</p>
+                                <p className="text-green-600">{item.stock > 0 && 'En stock'}</p>
+                            </div>
+                            <div className="flex gap-10">
+                                <div className="flex border-2 w-fit rounded">
+                                    <button
+                                        type="button"
+                                        onClick={() => decrementItem(item)}
+                                        disabled={item.quantity === 1}
+                                        className="grid place-items-center px-2"
+                                    >
+                                        <Minus className="size-4" />
+                                    </button>
+                                    <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.quantity}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => incrementItem(item)}
+                                        disabled={item.quantity === item.stock}
+                                        className="grid place-items-center px-2"
+                                    >
+                                        <Plus className="size-4" />
+                                    </button>
+                                </div>
+                                <Button variant="ghost" onClick={() => removeItem(item)}>
+                                    <Trash2 className="size-4 mr-2" /> Supprimer
+                                </Button>
+                            </div>
+                            <div className="flex justify-end">
+                                <Checkbox id={item.id} defaultChecked={item.included} onChange={() => includeItem(item)} className="rounded-[4px]" />
+                            </div>
+                        </div>
+                    </article>
+                ))}
+            </div>
             <div className="sticky top-40 h-fit">
                 <div className="bg-muted/20 rounded-2xl shadow-md p-4 flex flex-col gap-2">
                     <h3 className="font-medium text-lg text-center">Résumé de la commande</h3>
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="text-sm">Prix:</li>
-                        <li className="text-sm">$830</li>
+                        <li className="text-sm">${getTotal()}</li>
                         <li className="text-sm">Livraison:</li>
                         <li className="text-sm text-green-500">Gratuit</li>
                         <li className="text-sm">Remise: </li>
-                        <li className="text-sm text-destructive">-$87</li>
+                        <li className="text-sm text-destructive">
+                            -$
+                            {getTotalDiscount()}
+                        </li>
                     </ul>
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="font-medium text-lg">Total:</li>
-                        <li className="font-medium text-lg">$743</li>
+                        <li className="font-medium text-lg">${getSubtotal()}</li>
                     </ul>
                     <Button className="mt-2">Procéder au paiement</Button>
                 </div>

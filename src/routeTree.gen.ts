@@ -13,80 +13,106 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PublicImport } from './routes/_public'
 
 // Create Virtual Routes
 
-const CartLazyImport = createFileRoute('/cart')()
-const IndexLazyImport = createFileRoute('/')()
+const PublicIndexLazyImport = createFileRoute('/_public/')()
+const PublicCartLazyImport = createFileRoute('/_public/cart')()
 
 // Create/Update Routes
 
-const CartLazyRoute = CartLazyImport.update({
-  path: '/cart',
+const PublicRoute = PublicImport.update({
+  id: '/_public',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/cart.lazy').then((d) => d.Route))
+} as any)
 
-const IndexLazyRoute = IndexLazyImport.update({
+const PublicIndexLazyRoute = PublicIndexLazyImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+  getParentRoute: () => PublicRoute,
+} as any).lazy(() => import('./routes/_public/index.lazy').then((d) => d.Route))
+
+const PublicCartLazyRoute = PublicCartLazyImport.update({
+  path: '/cart',
+  getParentRoute: () => PublicRoute,
+} as any).lazy(() => import('./routes/_public/cart.lazy').then((d) => d.Route))
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof PublicImport
       parentRoute: typeof rootRoute
     }
-    '/cart': {
-      id: '/cart'
+    '/_public/cart': {
+      id: '/_public/cart'
       path: '/cart'
       fullPath: '/cart'
-      preLoaderRoute: typeof CartLazyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof PublicCartLazyImport
+      parentRoute: typeof PublicImport
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexLazyImport
+      parentRoute: typeof PublicImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface PublicRouteChildren {
+  PublicCartLazyRoute: typeof PublicCartLazyRoute
+  PublicIndexLazyRoute: typeof PublicIndexLazyRoute
+}
+
+const PublicRouteChildren: PublicRouteChildren = {
+  PublicCartLazyRoute: PublicCartLazyRoute,
+  PublicIndexLazyRoute: PublicIndexLazyRoute,
+}
+
+const PublicRouteWithChildren =
+  PublicRoute._addFileChildren(PublicRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
-  '/cart': typeof CartLazyRoute
+  '': typeof PublicRouteWithChildren
+  '/cart': typeof PublicCartLazyRoute
+  '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
-  '/cart': typeof CartLazyRoute
+  '/cart': typeof PublicCartLazyRoute
+  '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
-  '/cart': typeof CartLazyRoute
+  '/_public': typeof PublicRouteWithChildren
+  '/_public/cart': typeof PublicCartLazyRoute
+  '/_public/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cart'
+  fullPaths: '' | '/cart' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cart'
-  id: '__root__' | '/' | '/cart'
+  to: '/cart' | '/'
+  id: '__root__' | '/_public' | '/_public/cart' | '/_public/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
-  CartLazyRoute: typeof CartLazyRoute
+  PublicRoute: typeof PublicRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
-  CartLazyRoute: CartLazyRoute,
+  PublicRoute: PublicRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -101,15 +127,23 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/cart"
+        "/_public"
       ]
     },
-    "/": {
-      "filePath": "index.lazy.tsx"
+    "/_public": {
+      "filePath": "_public.tsx",
+      "children": [
+        "/_public/cart",
+        "/_public/"
+      ]
     },
-    "/cart": {
-      "filePath": "cart.lazy.tsx"
+    "/_public/cart": {
+      "filePath": "_public/cart.lazy.tsx",
+      "parent": "/_public"
+    },
+    "/_public/": {
+      "filePath": "_public/index.lazy.tsx",
+      "parent": "/_public"
     }
   }
 }
