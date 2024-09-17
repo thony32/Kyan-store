@@ -1,15 +1,34 @@
 import SearchIllustration from '@/components/misc/search-illustration'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { cn } from '@/utils/cn'
-import { SearchIcon, X } from 'lucide-react'
+import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Link } from '@tanstack/react-router'
+import { Link, useLayoutEffect } from '@tanstack/react-router'
 import { useCartStore } from '@/store/cart-store'
+import AuthDialog from './auth-dialog'
+import { useAuthDialogStore } from '@/store/auth-dialog-store'
 
+const useAuth = () => ({
+    isAuthenticated: false,
+    // role: "ADMIN",
+    role: 'USER'
+})
 export default function Navbar() {
+    const { isAuthenticated, role } = useAuth()
     const items = useCartStore((state) => state.items)
+    const shouldAuth = useAuthDialogStore((state) => state.shouldOpen)
+    const setShouldAuth = useAuthDialogStore((state) => state.setShouldOpen)
+
     const [search, setSearch] = useState('')
     // const debounced = useDebounceCallback(setSearch, 500); //Appel de fonction
 
@@ -72,11 +91,15 @@ export default function Navbar() {
             </div>
             <Dialog>
                 <DialogTrigger
-                    className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'w-full justify-start gap-2 pl-4 py-6 text-muted-foreground')}
+                    className={cn(buttonVariants({ variant: 'ghost', size: 'lg' }), 'w-full justify-start gap-2 pl-4 py-6 text-muted-foreground')}
                 >
                     <SearchIcon /> Rechercher un produit
                 </DialogTrigger>
-                <DialogContent className="min-h-96 sm:rounded-3xl" overlayClassName="bg-black/10" closeClassName="hidden">
+                <DialogContent
+                    className="min-h-96 sm:rounded-3xl"
+                    overlayClassName="bg-black/10"
+                    closeClassName="absolute -top-4 -right-4 bg-card opacity-100 p-1 rounded-full"
+                >
                     <DialogTitle className="sr-only" />
                     <DialogDescription className="sr-only" />
                     <label
@@ -131,17 +154,51 @@ export default function Navbar() {
                         </Badge>
                     )}
                 </Link>
-                <Button variant="ghost" className="rounded-full" size="icon">
-                    <svg className="w-6 h-6" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M18 20V18C18 16.9391 17.5786 15.9217 16.8284 15.1716C16.0783 14.4214 15.0609 14 14 14H6C4.93913 14 3.92172 14.4214 3.17157 15.1716C2.42143 15.9217 2 16.9391 2 18V20M14 6C14 8.20914 12.2091 10 10 10C7.79086 10 6 8.20914 6 6C6 3.79086 7.79086 2 10 2C12.2091 2 14 3.79086 14 6Z"
-                            stroke="#1E1E1E"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'rounded-full')}>
+                        <svg className="w-6 h-6" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M18 20V18C18 16.9391 17.5786 15.9217 16.8284 15.1716C16.0783 14.4214 15.0609 14 14 14H6C4.93913 14 3.92172 14.4214 3.17157 15.1716C2.42143 15.9217 2 16.9391 2 18V20M14 6C14 8.20914 12.2091 10 10 10C7.79086 10 6 8.20914 6 6C6 3.79086 7.79086 2 10 2C12.2091 2 14 3.79086 14 6Z"
+                                stroke="#1E1E1E"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {isAuthenticated ? (
+                            <>
+                                {role === 'ADMIN' && (
+                                    <DropdownMenuItem>
+                                        <LayoutGrid className="size-5 mr-4" /> Backoffice
+                                    </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem>
+                                    <LogOutIcon className="size-5 mr-4" /> Se déconnecter
+                                </DropdownMenuItem>
+                            </>
+                        ) : (
+                            <DropdownMenuItem onClick={() => setShouldAuth(true)}>
+                                <LogInIcon className="size-5 mr-4" /> Se connecter
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <Dialog open={shouldAuth} onOpenChange={setShouldAuth}>
+                    <DialogContent
+                        className="sm:rounded-3xl max-w-sm"
+                        overlayClassName="bg-black/20"
+                        closeClassName="absolute -top-4 -right-4 bg-card opacity-100 p-1 rounded-full"
+                    >
+                        <DialogTitle className="sr-only" />
+                        <DialogDescription className="sr-only" />
+                        <AuthDialog />
+                    </DialogContent>
+                </Dialog>
             </div>
         </header>
     )
