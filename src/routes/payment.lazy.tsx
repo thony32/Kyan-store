@@ -1,66 +1,43 @@
 import headphones from '@/components/assets/img/headphones.png'
-import joystick from '@/components/assets/img/joystick.png'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useCartStore } from '@/store/cart-store'
 import { Link, createLazyFileRoute } from '@tanstack/react-router'
 
 const PaymentPage = () => {
+    const items = useCartStore((state) => state.items)
+    const getSubtotal = useCartStore((state) => state.getSubtotal)
     return (
         <div className="min-h-screen flex px-[15%] py-[5%]">
             {/* NOTE: Left Section: Order Summary */}
-            <div className="w-full lg:w-1/2 p-8 bg-gray-50 space-y-8">
+            <div className="w-full lg:w-1/2 p-8 bg-gray-50 space-y-4">
                 <Link to="/cart">
                     <Button className="bg-foreground">Retour au panier</Button>
                 </Link>
-                <h2 className="text-2xl font-bold mb-4">Payer</h2>
-                <div className="text-4xl font-bold mb-6">
-                    2 763,00 <span className="text-sm"> $US</span>
+                <h2 className="text-2xl font-bold">Payer</h2>
+                <div className="text-4xl font-bold">
+                    {getSubtotal()} <span className="text-sm"> $US</span>
                 </div>
 
                 {/* NOTE: Order Items */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <img src={headphones} alt="Product 1" className="w-16 h-16 object-contain" />
-                            <div>
-                                <p className="text-sm font-semibold">Sony WH-1000XM5 Wireless Headphones</p>
-                                <p className="text-xs text-gray-500">Qté 2</p>
+                {items.map((item) => (
+                    <div key={item.id} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <img src={headphones} alt="Product 1" className="w-16 h-16 object-contain" />
+                                <div>
+                                    <p className="text-sm font-semibold line-clamp-1 overflow-hidden text-ellipsis">{item.name}</p>
+                                    <p className="text-xs text-gray-500">Qté {item.quantity}</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-bold">${item.price * item.quantity}</p>
+                                <p className="text-xs text-gray-500">${item.price} chacun</p>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className="font-bold">$644,00</p>
-                            <p className="text-xs text-gray-500">$322,00 $US chacun</p>
-                        </div>
                     </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <img src={headphones} alt="Product 2" className="w-16 h-16 object-contain" />
-                            <div>
-                                <p className="text-sm font-semibold">Sony WH-1000XM3 Bluetooth Headphones (Silver)</p>
-                                <p className="text-xs text-gray-500">Qté 3</p>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="font-bold">$2 064,00</p>
-                            <p className="text-xs text-gray-500">$688,00 $US chacun</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <img src={joystick} alt="Product 3" className="w-16 h-16 object-contain" />
-                            <div>
-                                <p className="text-sm font-semibold">Microsoft Xbox X/S Wireless Controller</p>
-                                <p className="text-xs text-gray-500">Qté 1</p>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="font-bold">$55,00</p>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* NOTE: Right Section: Payment Form */}
