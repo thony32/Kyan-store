@@ -6,19 +6,19 @@ import * as React from 'react'
 
 import { cn } from '@/utils/cn'
 
-const DropdownMenu = DropdownMenuPrimitive.Root
+const ChatDropdownMenu = DropdownMenuPrimitive.Root
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
+const ChatDropdownMenuTrigger = DropdownMenuPrimitive.Trigger
 
-const DropdownMenuGroup = DropdownMenuPrimitive.Group
+const ChatDropdownMenuGroup = DropdownMenuPrimitive.Group
 
-const DropdownMenuPortal = DropdownMenuPrimitive.Portal
+const ChatDropdownMenuPortal = DropdownMenuPrimitive.Portal
 
-const DropdownMenuSub = DropdownMenuPrimitive.Sub
+const ChatDropdownMenuSub = DropdownMenuPrimitive.Sub
 
-const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
+const ChatDropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
 
-const DropdownMenuSubTrigger = React.forwardRef<
+const ChatDropdownMenuSubTrigger = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
         inset?: boolean
@@ -37,9 +37,9 @@ const DropdownMenuSubTrigger = React.forwardRef<
         <ChevronRightIcon className="ml-auto h-4 w-4" />
     </DropdownMenuPrimitive.SubTrigger>
 ))
-DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName
+ChatDropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName
 
-const DropdownMenuSubContent = React.forwardRef<
+const ChatDropdownMenuSubContent = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>
 >(({ className, ...props }, ref) => (
@@ -52,9 +52,9 @@ const DropdownMenuSubContent = React.forwardRef<
         {...props}
     />
 ))
-DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName
+ChatDropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName
 
-const DropdownMenuContent = React.forwardRef<
+const ChatDropdownMenuContent = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
@@ -71,9 +71,9 @@ const DropdownMenuContent = React.forwardRef<
         />
     </DropdownMenuPrimitive.Portal>
 ))
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
+ChatDropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
-const DropdownMenuItem = React.forwardRef<
+const ChatDropdownMenuItem = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Item>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> & {
         inset?: boolean
@@ -89,9 +89,9 @@ const DropdownMenuItem = React.forwardRef<
         {...props}
     />
 ))
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
+ChatDropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
 
-const DropdownMenuCheckboxItem = React.forwardRef<
+const ChatDropdownMenuCheckboxItem = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>
 >(({ className, children, checked, ...props }, ref) => (
@@ -112,9 +112,9 @@ const DropdownMenuCheckboxItem = React.forwardRef<
         {children}
     </DropdownMenuPrimitive.CheckboxItem>
 ))
-DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName
+ChatDropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName
 
-const DropdownMenuRadioItem = React.forwardRef<
+const ChatDropdownMenuRadioItem = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
 >(({ className, children, ...props }, ref) => (
@@ -134,9 +134,9 @@ const DropdownMenuRadioItem = React.forwardRef<
         {children}
     </DropdownMenuPrimitive.RadioItem>
 ))
-DropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
+ChatDropdownMenuRadioItem.displayName = DropdownMenuPrimitive.RadioItem.displayName
 
-const DropdownMenuLabel = React.forwardRef<
+const ChatDropdownMenuLabel = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Label>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label> & {
         inset?: boolean
@@ -144,33 +144,33 @@ const DropdownMenuLabel = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
     <DropdownMenuPrimitive.Label ref={ref} className={cn('px-2 py-1.5 text-sm font-semibold', inset && 'pl-8', className)} {...props} />
 ))
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
+ChatDropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
 
-const DropdownMenuSeparator = React.forwardRef<
+const ChatDropdownMenuSeparator = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
     React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
 >(({ className, ...props }, ref) => <DropdownMenuPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-muted', className)} {...props} />)
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
+ChatDropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
-const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
+const ChatDropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
     return <span className={cn('ml-auto text-xs tracking-widest opacity-60', className)} {...props} />
 }
-DropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
+ChatDropdownMenuShortcut.displayName = 'DropdownMenuShortcut'
 
 export {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuCheckboxItem,
-    DropdownMenuRadioItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuGroup,
-    DropdownMenuPortal,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuRadioGroup
+    ChatDropdownMenu,
+    ChatDropdownMenuTrigger,
+    ChatDropdownMenuContent,
+    ChatDropdownMenuItem,
+    ChatDropdownMenuCheckboxItem,
+    ChatDropdownMenuRadioItem,
+    ChatDropdownMenuLabel,
+    ChatDropdownMenuSeparator,
+    ChatDropdownMenuShortcut,
+    ChatDropdownMenuGroup,
+    ChatDropdownMenuPortal,
+    ChatDropdownMenuSub,
+    ChatDropdownMenuSubContent,
+    ChatDropdownMenuSubTrigger,
+    ChatDropdownMenuRadioGroup
 }

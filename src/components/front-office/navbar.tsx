@@ -1,4 +1,5 @@
 import SearchIllustration from '@/components/misc/search-illustration'
+import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import {
@@ -9,14 +10,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useAuthDialogStore } from '@/store/auth-dialog-store'
+import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
+import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Link } from '@tanstack/react-router'
-import { useCartStore } from '@/store/cart-store'
 import AuthDialog from './auth-dialog'
-import { useAuthDialogStore } from '@/store/auth-dialog-store'
 
 const useAuth = () => ({
     isAuthenticated: false,
