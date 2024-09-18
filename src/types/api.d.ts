@@ -20,6 +20,13 @@ export type Discount = Entity<{
     valid_until: Date
 }>
 
+export type Rating = Entity<{
+    id: string
+    star: number
+    description: string
+    user: User
+}>
+
 export type Product = Entity<{
     name: string
     description: string
@@ -33,4 +40,5 @@ export type Product = Entity<{
     subcategory_name: string
     images: string[]
     discount: Discount
+    ratings: Rating[]
 }>

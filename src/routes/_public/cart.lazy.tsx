@@ -1,6 +1,7 @@
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useCartStore } from '@/store/cart-store'
+import { useViewItemStore } from '@/store/view-item-store'
 import { cn } from '@/utils/cn'
 import { createLazyFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
@@ -150,6 +151,7 @@ function OrderList() {
     const getTotal = useCartStore((state) => state.getTotal)
     const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
     const getSubtotal = useCartStore((state) => state.getSubtotal)
+    const setOpenItem = useViewItemStore((state) => state.setOpen)
 
     return (
         <section className="grid grid-cols-3 gap-6">
@@ -158,7 +160,10 @@ function OrderList() {
                     <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
                         <img src={item.images[0]} alt={item.name} className="w-full max-w-52 aspect-square object-contain" />
                         <div className="flex flex-col gap-2">
-                            <h3 className="line-clamp-2">{item.name}</h3>
+                            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+                            <h3 className="line-clamp-2 cursor-pointer" onClick={() => setOpenItem(item)}>
+                                {item.name}
+                            </h3>
                             <div className="text-muted-foreground text-sm">
                                 <p>Modèle: {item.model}</p>
                                 <p>Prix: ${item.price}</p>

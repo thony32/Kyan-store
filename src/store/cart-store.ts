@@ -49,13 +49,28 @@ export const useCartStore = create<CartState>()(
                         valid_until: new Date('2024-10-20')
                     },
                     quantity: 1,
-                    included: true
+                    included: true,
+                    ratings: [
+                        {
+                            id: '1',
+                            star: 4,
+                            description: 'Test comment',
+                            user: {
+                                id: '1',
+                                email: 'g@gmail.com',
+                                firstname: 'Jean',
+                                lastname: 'Baptiste',
+                                phone: '+261 34 42 509 07',
+                                role: 'CLIENT'
+                            }
+                        }
+                    ]
                 },
                 {
                     id: '2',
                     name: 'Apple 2023 MacBook Air laptop with M2 chip: 38.91cm (15.3 inch) Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light.',
                     description:
-                        'IMPRESSIVELY BIG, IMPOSSIBLY THIN — The 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light.',
+                        'IMPRESSIVELY BIG, IMPOSSIBLY THIN — The 15‑inch MacBook Air makes room for more of what you love with a spacious Liquid Retina display. The durable 100% recycled aluminium enclosure is strikingly thin and light. SUPERCHARGED BY M2 — Get more done faster with a powerful 8-core CPU, 10-core GPU and up to 24GB of unified memory. UP TO 18 HOURS OF BATTERY LIFE — Go all day with the power-efficient performance of the Apple M2 chip. (Battery life varies by use and configuration. See our website for more information.) SPACIOUS, BEAUTIFUL DISPLAY — The high-resolution, 38.91-centimetre (15.3-inch) Liquid Retina display features 500 nits of brightness, P3 wide colour and support for one billion colours for vibrant images and incredible detail. (The display on the 15-inch MacBook Air has rounded corners at the top. When measured as a standard rectangular shape, the screen is 38.91 centimetres (15.3 inches) diagonally (actual viewable area is less.)',
                     price: 1753,
                     stock: 20,
                     brand: 'Apple',
@@ -71,7 +86,49 @@ export const useCartStore = create<CartState>()(
                         valid_until: new Date('2024-10-20')
                     },
                     quantity: 1,
-                    included: true
+                    included: true,
+                    ratings: [
+                        {
+                            id: '1',
+                            star: 4,
+                            description: 'Test comment',
+                            user: {
+                                id: '1',
+                                email: 'g@gmail.com',
+                                firstname: 'Jean',
+                                lastname: 'Baptiste',
+                                phone: '+261 34 42 509 07',
+                                role: 'CLIENT'
+                            }
+                        },
+                        {
+                            id: '2',
+                            star: 2,
+                            description:
+                                "J'ai testé ce produit et je suis pas très satisfait. La qualité de l'image est très mauvaise. Très difficile à utiliser pour mon âge.",
+                            user: {
+                                id: '2',
+                                email: 'g@gmail.com',
+                                firstname: 'Marie',
+                                lastname: 'Jeanne',
+                                phone: '+261 34 42 509 07',
+                                role: 'CLIENT'
+                            }
+                        },
+                        {
+                            id: '3',
+                            star: 5,
+                            description: 'Je ne suis pas du même avis, le produit est bien',
+                            user: {
+                                id: '4',
+                                email: 'g@gmail.com',
+                                firstname: 'Léo',
+                                lastname: 'Douma',
+                                phone: '+261 34 42 509 07',
+                                role: 'CLIENT'
+                            }
+                        }
+                    ]
                 }
             ],
             addItem: (product: Product) => {
@@ -108,7 +165,7 @@ export const useCartStore = create<CartState>()(
                     }
                 })
             },
-            getSubtotal: () => {
+            getTotal: () => {
                 const items = get().items
                 return items.filter((item) => item.included).reduce((subtotal, item) => subtotal + item.price * item.quantity, 0)
             },
@@ -118,9 +175,9 @@ export const useCartStore = create<CartState>()(
                     .filter((item) => item.included)
                     .reduce((totalDiscount, item) => totalDiscount + getDiscountAmount(item) * item.quantity, 0)
             },
-            getTotal: () => {
-                const { getSubtotal, getTotalDiscount } = get()
-                return getSubtotal() - getTotalDiscount()
+            getSubtotal: () => {
+                const { getTotal, getTotalDiscount } = get()
+                return getTotal() - getTotalDiscount()
             }
         })),
         {

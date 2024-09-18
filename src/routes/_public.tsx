@@ -1,4 +1,5 @@
 import Navbar from '@/components/front-office/navbar'
+import ViewItemDialog from '@/components/products/view-item-dialog'
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 const PublicLayout = () => {
@@ -8,6 +9,7 @@ const PublicLayout = () => {
             <div>
                 <Outlet />
             </div>
+            <ViewItemDialog />
         </>
     )
 }

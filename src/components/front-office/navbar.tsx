@@ -13,7 +13,7 @@ import { cn } from '@/utils/cn'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Link, useLayoutEffect } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { useCartStore } from '@/store/cart-store'
 import AuthDialog from './auth-dialog'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
@@ -91,7 +91,7 @@ export default function Navbar() {
             </div>
             <Dialog>
                 <DialogTrigger
-                    className={cn(buttonVariants({ variant: 'ghost', size: 'lg' }), 'w-full justify-start gap-2 pl-4 py-6 text-muted-foreground')}
+                    className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'w-full justify-start gap-2 pl-4 py-6 text-muted-foreground')}
                 >
                     <SearchIcon /> Rechercher un produit
                 </DialogTrigger>
@@ -105,9 +105,9 @@ export default function Navbar() {
                     <label
                         htmlFor="search"
                         className={cn(
-                            'bg-secondary text-muted-foreground flex items-center h-fit gap-3 pl-4 pr-2 rounded-xl w-full outline-primary',
-                            'has-[input:focus]:bg-transparent has-[input:focus]:outline',
-                            search && 'bg-transparent outline'
+                            'border-2 flex items-center h-fit gap-3 pl-4 pr-2 rounded-xl w-full',
+                            'has-[input:focus]:border-primary',
+                            search && 'border-primary'
                         )}
                     >
                         <SearchIcon className={cn('flex-shrink-0', 'has-[+_input:focus]:text-primary', search && 'text-primary')} />
