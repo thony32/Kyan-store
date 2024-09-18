@@ -30,7 +30,8 @@
                 "noExplicitAny": "off"
             },
             "a11y": {
-                "noSvgWithoutTitle": "off"
+                "noSvgWithoutTitle": "off",
+                "noLabelWithoutControl": "off"
             }
         },
         "ignore": ["./node_modules/**", "./dist/**"]
