@@ -206,7 +206,7 @@ function OrderList() {
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="text-sm">Prix:</li>
-                        <li className="text-sm">${getTotal()}</li>
+                        <li className="text-sm">${getSubtotal()}</li>
                         <li className="text-sm">Livraison:</li>
                         <li className="text-sm text-green-500">Gratuit</li>
                         <li className="text-sm">Remise: </li>
@@ -218,7 +218,7 @@ function OrderList() {
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="font-medium text-lg">Total:</li>
-                        <li className="font-medium text-lg">${getSubtotal()}</li>
+                        <li className="font-medium text-lg">${getTotal()}</li>
                     </ul>
                     <Link to="/payment">
                         <Button className="w-full mt-2">Procéder au paiement</Button>

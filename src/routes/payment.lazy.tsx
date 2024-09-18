@@ -7,11 +7,11 @@ import { Link, createLazyFileRoute } from '@tanstack/react-router'
 
 const PaymentPage = () => {
     return (
-        <div className="min-h-screen flex px-[10%] py-[5%]">
+        <div className="min-h-screen flex px-[15%] py-[5%]">
             {/* NOTE: Left Section: Order Summary */}
             <div className="w-full lg:w-1/2 p-8 bg-gray-50 space-y-8">
-                <Link to="/">
-                    <Button>Retour</Button>
+                <Link to="/cart">
+                    <Button className="bg-foreground">Retour au panier</Button>
                 </Link>
                 <h2 className="text-2xl font-bold mb-4">Payer</h2>
                 <div className="text-4xl font-bold mb-6">
@@ -22,7 +22,7 @@ const PaymentPage = () => {
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <img src={headphones} alt="Product 1" className="w-20 h-20 object-contain" />
+                            <img src={headphones} alt="Product 1" className="w-16 h-16 object-contain" />
                             <div>
                                 <p className="text-sm font-semibold">Sony WH-1000XM5 Wireless Headphones</p>
                                 <p className="text-xs text-gray-500">Qté 2</p>
@@ -36,7 +36,7 @@ const PaymentPage = () => {
 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <img src={headphones} alt="Product 2" className="w-20 h-20 object-contain" />
+                            <img src={headphones} alt="Product 2" className="w-16 h-16 object-contain" />
                             <div>
                                 <p className="text-sm font-semibold">Sony WH-1000XM3 Bluetooth Headphones (Silver)</p>
                                 <p className="text-xs text-gray-500">Qté 3</p>
@@ -50,7 +50,7 @@ const PaymentPage = () => {
 
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <img src={joystick} alt="Product 3" className="w-20 h-20 object-contain" />
+                            <img src={joystick} alt="Product 3" className="w-16 h-16 object-contain" />
                             <div>
                                 <p className="text-sm font-semibold">Microsoft Xbox X/S Wireless Controller</p>
                                 <p className="text-xs text-gray-500">Qté 1</p>
@@ -64,7 +64,7 @@ const PaymentPage = () => {
             </div>
 
             {/* NOTE: Right Section: Payment Form */}
-            <div className="w-full lg:w-1/2 p-8">
+            <div className="w-full lg:w-1/2 px-24 py-8">
                 <h2 className="text-xl font-bold mb-6">Payer par carte</h2>
 
                 <form>
@@ -77,10 +77,18 @@ const PaymentPage = () => {
                     {/* NOTE: Card Information */}
                     <div className="mb-4">
                         <label className="block text-sm mb-2">Informations de la carte</label>
-                        <div className="flex space-x-2">
-                            <Input type="text" className="w-8/12 border  p-2" placeholder="1234 1234 1234 1234" />
-                            <Input type="text" className="w-4/12 border  p-2" placeholder="MM / AA" />
-                            <Input type="text" className="w-4/12 border  p-2" placeholder="CVC" />
+                        <div className="flex flex-col gap-0">
+                            <div>
+                                <Input
+                                    type="text"
+                                    className="border p-2 rounded-none rounded-tr-lg rounded-tl-lg"
+                                    placeholder="1234 1234 1234 1234"
+                                />
+                            </div>
+                            <div className="flex gap-0">
+                                <Input type="text" className="border p-2 rounded-none rounded-bl-lg" placeholder="MM / AA" />
+                                <Input type="text" className="border p-2 rounded-none rounded-br-lg" placeholder="CVC" />
+                            </div>
                         </div>
                     </div>
 
@@ -92,9 +100,9 @@ const PaymentPage = () => {
 
                     {/* NOTE: Billing Address */}
                     <div className="mb-4">
-                        <label className="block text-sm mb-2">Adresse de facturation</label>
+                        <label className="block text-sm">Adresse de facturation</label>
                         <Select>
-                            <SelectTrigger className="w-full border  p-2 mb-2">
+                            <SelectTrigger className="w-full border rounded-none rounded-tr-lg rounded-tl-lg p-2">
                                 <SelectValue placeholder="Region" />
                             </SelectTrigger>
                             <SelectContent>
@@ -102,11 +110,11 @@ const PaymentPage = () => {
                                 <SelectItem value="USA">USA</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Input type="text" className="w-full border  p-2 mb-2" placeholder="Ligne d'adresse n°1" />
-                        <Input type="text" className="w-full border  p-2 mb-2" placeholder="Ligne d'adresse n°2" />
-                        <div className="flex space-x-2">
-                            <Input type="text" className="w-1/2 border  p-2" placeholder="Code postal" />
-                            <Input type="text" className="w-1/2 border  p-2" placeholder="Ville" />
+                        <Input type="text" className="w-full border p-2 rounded-none" placeholder="Ligne d'adresse n°1" />
+                        <Input type="text" className="w-full border p-2 rounded-none" placeholder="Ligne d'adresse n°2" />
+                        <div className="flex">
+                            <Input type="text" className="w-1/2 border p-2 rounded-none rounded-bl-lg" placeholder="Code postal" />
+                            <Input type="text" className="w-1/2 border p-2 rounded-none rounded-br-lg" placeholder="Ville" />
                         </div>
                     </div>
 
