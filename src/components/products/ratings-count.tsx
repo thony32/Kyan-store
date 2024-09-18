@@ -11,8 +11,7 @@ export default function RatingsCount({ ratings }: { ratings: Rating[] }) {
         <div className="flex items-center gap-2">
             <Star className="text-yellow-400" />
             <span className="font-medium -ml-1">{getRatingAverage(ratings)}</span>
-            <span className="size-1 mt-px bg-muted-foreground rounded-full" />
-            <span className="text-blue-500">{ratings.length} votes</span>
+            <span className="text-gray-500">• {ratings.length} votes</span>
         </div>
     )
 }

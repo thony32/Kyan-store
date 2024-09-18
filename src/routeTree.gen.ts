@@ -17,10 +17,16 @@ import { Route as PublicImport } from './routes/_public'
 
 // Create Virtual Routes
 
+const PaymentLazyImport = createFileRoute('/payment')()
 const PublicIndexLazyImport = createFileRoute('/_public/')()
 const PublicCartLazyImport = createFileRoute('/_public/cart')()
 
 // Create/Update Routes
+
+const PaymentLazyRoute = PaymentLazyImport.update({
+  path: '/payment',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/payment.lazy').then((d) => d.Route))
 
 const PublicRoute = PublicImport.update({
   id: '/_public',
@@ -46,6 +52,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof PublicImport
+      parentRoute: typeof rootRoute
+    }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentLazyImport
       parentRoute: typeof rootRoute
     }
     '/_public/cart': {
@@ -82,11 +95,13 @@ const PublicRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteWithChildren
+  '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
@@ -94,25 +109,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_public': typeof PublicRouteWithChildren
+  '/payment': typeof PaymentLazyRoute
   '/_public/cart': typeof PublicCartLazyRoute
   '/_public/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/cart' | '/'
+  fullPaths: '' | '/payment' | '/cart' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/cart' | '/'
-  id: '__root__' | '/_public' | '/_public/cart' | '/_public/'
+  to: '/payment' | '/cart' | '/'
+  id: '__root__' | '/_public' | '/payment' | '/_public/cart' | '/_public/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
+  PaymentLazyRoute: typeof PaymentLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
+  PaymentLazyRoute: PaymentLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -127,7 +145,8 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/_public"
+        "/_public",
+        "/payment"
       ]
     },
     "/_public": {
@@ -136,6 +155,9 @@ export const routeTree = rootRoute
         "/_public/cart",
         "/_public/"
       ]
+    },
+    "/payment": {
+      "filePath": "payment.lazy.tsx"
     },
     "/_public/cart": {
       "filePath": "_public/cart.lazy.tsx",

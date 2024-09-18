@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useCartStore } from '@/store/cart-store'
 import { useViewItemStore } from '@/store/view-item-store'
 import { cn } from '@/utils/cn'
-import { createLazyFileRoute, Link } from '@tanstack/react-router'
+import { Link, createLazyFileRoute } from '@tanstack/react-router'
 import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
 
 export const Route = createLazyFileRoute('/_public/cart')({
@@ -225,7 +225,9 @@ function OrderList() {
                         <li className="font-medium text-lg">Total:</li>
                         <li className="font-medium text-lg">${getSubtotal()}</li>
                     </ul>
-                    <Button className="mt-2">Procéder au paiement</Button>
+                    <Link to="/payment">
+                        <Button className="w-full mt-2">Procéder au paiement</Button>
+                    </Link>
                 </div>
             </aside>
         </section>

@@ -44,7 +44,7 @@ export default function ViewItemDialog() {
                                             {itemToView.price - getDiscountAmount(itemToView)}
                                         </span>
                                     </div>
-                                    <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none">
+                                    <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">
                                         -{itemToView.discount.percentage * 10}%
                                     </Badge>
                                 </div>
@@ -112,16 +112,16 @@ export default function ViewItemDialog() {
                 ) : null}
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button type="button" variant="outline">
+                        <Button type="button" variant="secondary">
                             Fermer
                         </Button>
                     </DialogClose>
                     {!cartItems.find((item) => item.id === itemToView?.id) ? (
                         <Button type="button" onClick={() => addToCart(itemToView!)}>
-                            Voir le panier <ShoppingBag className="size-4 ml-2" />
+                            Ajouter au panier <ShoppingBag className="size-4 ml-2" />
                         </Button>
                     ) : match ? null : (
-                        <Link to="/cart" className={cn(buttonVariants({ variant: 'default' }))}>
+                        <Link to="/cart" className={cn(buttonVariants({ variant: 'outline' }))} onClick={() => setOpenItem(false)}>
                             Voir le panier <ShoppingBag className="size-4 ml-2" />
                         </Link>
                     )}
