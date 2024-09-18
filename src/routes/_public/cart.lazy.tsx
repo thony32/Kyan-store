@@ -22,7 +22,7 @@ function CartPage() {
                     <ArrowLeft className="size-4" /> Continuer mes achats
                 </Link>
             </section>
-            {items ? <OrderList /> : <EmptyOrder />}
+            {items.length ? <OrderList /> : <EmptyOrder />}
         </main>
     )
 }
