@@ -44,8 +44,9 @@ const ProductSkeleton = () => {
 
 const Products: React.FC = () => {
     const { data, status, error } = useProducts({})
-    const [subFilter, setSubFilter] = useState<Subcategory | null>(null)
     const categorySelected = useFilterStore((state) => state.selected)
+    const subFilter = useFilterStore((state) => state.subcategory)
+    const setSubFilter = useFilterStore((state) => state.setSubcategory)
 
     return (
         <div className=" mx-auto">
@@ -58,7 +59,7 @@ const Products: React.FC = () => {
                                 key={subcategory.id}
                                 type="button"
                                 className="rounded-lg opacity-70"
-                                onClick={() => setSubFilter((prev) => (prev === subcategory ? null : subcategory))}
+                                onClick={() => setSubFilter(subFilter ? null : subcategory)}
                                 variant={subcategory !== subFilter ? 'secondary' : undefined}
                             >
                                 {subcategory.name}
