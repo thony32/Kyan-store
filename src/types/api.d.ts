@@ -15,6 +15,17 @@ export type User = Entity<{
     role: 'ADMIN' | 'CLIENT'
 }>
 
+export type Subcategory = Entity<{
+    name: string
+    category_id: string
+}>
+
+export type Category = Entity<{
+    name: string
+    is_main_category: boolean
+    subcategories: Subcategory[]
+}>
+
 export type Discount = Entity<{
     percentage: number
     valid_until: Date
@@ -23,7 +34,7 @@ export type Discount = Entity<{
 export type Rating = Entity<{
     id: string
     star: number
-    description: string
+    comment: string
     user: User
 }>
 

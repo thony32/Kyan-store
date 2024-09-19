@@ -8,6 +8,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { HelmetProvider } from 'react-helmet-async'
 import ErrorFallback from './components/errors/error-boundary'
 import { routeTree } from './routeTree.gen'
+import { queryConfig } from './libs/react-query'
 
 const router = createRouter({ routeTree })
 
@@ -17,7 +18,9 @@ declare module '@tanstack/react-router' {
     }
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+    defaultOptions: queryConfig
+})
 
 const rootElement = document.getElementById('root')!
 

@@ -101,7 +101,7 @@ export default function ViewItemDialog() {
                                                         <span className="text-xs font-light">{rating.star}</span>
                                                     </div>
                                                 </div>
-                                                <p className="text-xs font-light">{rating.description}</p>
+                                                <p className="text-xs font-light">{rating.comment}</p>
                                             </div>
                                         </div>
                                     ))}

@@ -1,9 +1,13 @@
-import { products } from '@/constants'
-import { Badge } from '../ui/badge'
-import type { Product } from '@/types/api'
-import getDiscountAmount from '@/utils/get-discount-amount'
-import RatingsCount from './ratings-count'
+import { useProducts } from '@/api/products/get-products'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useFilterStore } from '@/store/filter-store'
 import { useViewItemStore } from '@/store/view-item-store'
+import type { Product, Subcategory } from '@/types/api'
+import getDiscountAmount from '@/utils/get-discount-amount'
+import { useState } from 'react'
+import RatingsCount from './ratings-count'
 
 const ProductCard = ({ product }: { product: Product }) => {
     const setOpenProduct = useViewItemStore((state) => state.setOpen)
@@ -27,26 +31,56 @@ const ProductCard = ({ product }: { product: Product }) => {
     )
 }
 
+const ProductSkeleton = () => {
+    return (
+        <div className="border rounded-lg px-4 py-2">
+            <Skeleton className="w-full h-40 bg-gray-200 mb-2" />
+            <Skeleton className="h-4 bg-gray-200 w-3/4 mb-2" />
+            <Skeleton className="h-4 bg-gray-200 w-1/2 mb-2" />
+            <Skeleton className="h-4 bg-gray-200 w-1/4 mb-2" />
+        </div>
+    )
+}
+
 const Products: React.FC = () => {
+    const { data, status, error } = useProducts({})
+    const [subFilter, setSubFilter] = useState<Subcategory | null>(null)
+    const categorySelected = useFilterStore((state) => state.selected)
+
     return (
         <div className=" mx-auto">
-            <div className="flex gap-4">
-                <h2 className="text-lg mb-4">Produits récents:</h2>
-                <div className="mb-4">
-                    <button type="button" className="bg-purple-600 text-white py-1 px-3 rounded-lg mr-2">
-                        Casque
-                    </button>
-                    <button type="button" className="bg-gray-200 text-gray-700 py-1 px-3 rounded-lg">
-                        Écouteur
-                    </button>
-                </div>
+            <div className="flex gap-4 mb-4">
+                <h2 className="text-lg">Produits récents:</h2>
+                {categorySelected && (
+                    <div className="space-x-2">
+                        {categorySelected.subcategories.map((subcategory) => (
+                            <Button
+                                key={subcategory.id}
+                                type="button"
+                                className="rounded-lg opacity-70"
+                                onClick={() => setSubFilter((prev) => (prev === subcategory ? null : subcategory))}
+                                variant={subcategory !== subFilter ? 'secondary' : undefined}
+                            >
+                                {subcategory.name}
+                            </Button>
+                        ))}
+                    </div>
+                )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {/* Mandrapaha de averina tena produit */}
-                {Array.from({ length: 10 }).map((_, index) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                    <ProductCard key={index} product={products[0]} />
-                ))}
+                {status === 'pending' ? (
+                    Array.from({ length: 5 }).map((_, idx) => (
+                        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                        <ProductSkeleton key={idx} />
+                    ))
+                ) : status === 'error' ? (
+                    <p className="text-destructive col-span-5">Error: {error.message}</p>
+                ) : (
+                    data
+                        .filter((product) => (categorySelected ? product.category_name === categorySelected?.name : true))
+                        .filter((product) => (subFilter ? product.subcategory_name === subFilter.name : true))
+                        .map((product) => <ProductCard key={product.id} product={product} />)
+                )}
             </div>
         </div>
     )
