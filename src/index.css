@@ -85,4 +85,21 @@
             @apply text-yellow-400;
         }
     }
+
+    .bubble-user::before {
+        @apply content-[""] absolute z-0 h-5 w-5 rounded-bl-[15px] -right-2 bottom-0;
+        @apply bg-purple-600;
+    }
+    .bubble-user::after {
+        @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-bl-[10px] -right-2.5 bottom-0;
+        background: white;
+    }
+    .bubble-bot::before {
+        @apply content-[""] absolute z-0 h-5 w-5 rounded-br-[15px] -left-2 bottom-0;
+        @apply bg-gray-200;
+    }
+    .bubble-bot::after {
+        @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-br-[10px] -left-2.5 bottom-0;
+        background: white;
+    }
 }

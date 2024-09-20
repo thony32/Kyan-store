@@ -1,9 +1,11 @@
 import joystick from '@/components/assets/img/joystick.png'
+import IALogo from '@/components/misc/ia-logo'
 import NotFound from '@/components/not-found'
 import { Button } from '@/components/ui/button'
-import { ChatDropdownMenu, ChatDropdownMenuContent, ChatDropdownMenuTrigger } from '@/components/ui/chat-dropdown'
+import { ChatDropdownMenu, ChatDropdownMenuContent, ChatDropdownMenuItem, ChatDropdownMenuTrigger } from '@/components/ui/chat-dropdown'
 import { Input } from '@/components/ui/input'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { Send, X } from 'lucide-react'
 
 const App = () => {
     return (
@@ -20,31 +22,35 @@ const App = () => {
                         </svg>
                     </Button>
                 </ChatDropdownMenuTrigger>
-                <ChatDropdownMenuContent align="end" className="w-96">
-                    <div className="w-full max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+                <ChatDropdownMenuContent align="end" className="w-full max-w-sm bg-white shadow-lg p-0">
+                    <div className="w-full max-w-sm mx-auto rounded-lg overflow-hidden">
                         {/* Header */}
-                        <div className="bg-purple-600 text-white flex items-center justify-between p-4">
+                        <div className="bg-gradient-to-l from-purple-500 to-primary text-white flex items-center justify-between p-4">
                             <div className="flex items-center space-x-2">
-                                <img src={joystick} alt="KyanAI Logo" className="w-8 h-8 rounded-full" />
+                                <IALogo className="size-8 invert saturate-0 brightness-0" />
                                 <h1 className="font-bold">KyanAI</h1>
                             </div>
-                            <Button size="icon" type="button" className="text-white text-2xl rounded-full" variant="destructive">
-                                &times;
-                            </Button>
+                            <ChatDropdownMenuItem asChild>
+                                <Button size="icon" type="button" className="rounded-full size-8">
+                                    <X className="size-4" strokeWidth={4} />
+                                </Button>
+                            </ChatDropdownMenuItem>
                         </div>
 
                         {/* Chat Body */}
                         <div className="p-4 space-y-4">
                             {/* User Message */}
                             <div className="flex justify-end">
-                                <div className="bg-purple-600 text-white rounded-lg p-2 max-w-xs">
+                                <div className="bubble-user relative bg-purple-600 text-white rounded-lg px-3 py-2 max-w-xs">
                                     Aides moi à trouver le produit idéal s'il te plaît!
                                 </div>
                             </div>
 
                             {/* Bot Response */}
                             <div className="flex justify-start">
-                                <div className="bg-gray-200 text-foreground rounded-lg p-2 max-w-xs">Voici une liste de produits populaire</div>
+                                <div className="bubble-bot relative bg-gray-200 text-foreground rounded-lg px-3 py-2 max-w-xs">
+                                    Voici une liste de produits populaire
+                                </div>
                             </div>
 
                             {/* Product List */}
@@ -69,20 +75,27 @@ const App = () => {
 
                             {/* User Message */}
                             <div className="flex justify-end">
-                                <div className="bg-purple-600 text-white rounded-lg p-2 max-w-xs">Merci !</div>
+                                <div className="bubble-user relative bg-purple-600 text-white rounded-lg px-3 py-2 max-w-xs">Merci !</div>
                             </div>
                         </div>
 
                         {/* Chat Input */}
-                        <div className="p-4 border-t flex items-center">
+                        <div className="p-3 border-t flex items-center">
                             <Input
                                 type="text"
                                 placeholder="Écrire ici votre message..."
-                                className="flex-1 border rounded-lg p-2 text-gray-700 focus:outline-none focus:ring focus:border-purple-300"
+                                className="flex-1 border rounded-lg px-3 py-5 text-gray-700 focus:outline-none focus:ring focus:border-purple-300"
                             />
-                            <Button size="icon" type="button" className="ml-2 bg-purple-600 text-white p-2 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                                    <path d="M2 2v20l20-10L2 2z" />
+                            <Button size="icon" type="button" variant="link" className="ml-2 rounded-full">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+                                    <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path
+                                            d="M18.0693 8.50867L9.50929 4.22867C3.75929 1.34867 1.39929 3.70867 4.27929 9.45867L5.14929 11.1987C5.39929 11.7087 5.39929 12.2987 5.14929 12.8087L4.27929 14.5387C1.39929 20.2887 3.74929 22.6487 9.50929 19.7687L18.0693 15.4887C21.9093 13.5687 21.9093 10.4287 18.0693 8.50867ZM14.8393 12.7487H9.43929C9.02929 12.7487 8.68929 12.4087 8.68929 11.9987C8.68929 11.5887 9.02929 11.2487 9.43929 11.2487H14.8393C15.2493 11.2487 15.5893 11.5887 15.5893 11.9987C15.5893 12.4087 15.2493 12.7487 14.8393 12.7487Z"
+                                            fill="currentColor"
+                                        />
+                                    </g>
                                 </svg>
                             </Button>
                         </div>
