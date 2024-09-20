@@ -4,9 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useFilterStore } from '@/store/filter-store'
 import { useViewItemStore } from '@/store/view-item-store'
-import type { Product, Subcategory } from '@/types/api'
+import type { Product } from '@/types/api'
 import getDiscountAmount from '@/utils/get-discount-amount'
-import { useState } from 'react'
 import RatingsCount from './ratings-count'
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -59,7 +58,7 @@ const Products: React.FC = () => {
                                 key={subcategory.id}
                                 type="button"
                                 className="rounded-lg opacity-70"
-                                onClick={() => setSubFilter(subFilter ? null : subcategory)}
+                                onClick={() => setSubFilter(!subFilter ? subcategory : subFilter === subcategory ? null : subcategory)}
                                 variant={subcategory !== subFilter ? 'secondary' : undefined}
                             >
                                 {subcategory.name}
