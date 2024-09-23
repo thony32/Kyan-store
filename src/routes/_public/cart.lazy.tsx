@@ -167,7 +167,7 @@ function OrderList() {
                             <div className="text-muted-foreground text-sm">
                                 <p>Modèle: {item.model}</p>
                                 <p>Prix: ${item.price}</p>
-                                <p className="text-green-600">{item.stock > 0 && 'En stock'}</p>
+                                <p className="text-green-600">{item.quantity > 0 && 'En stock'}</p>
                             </div>
                             <div className="flex gap-10">
                                 <div className="flex border-2 w-fit rounded">
@@ -183,7 +183,7 @@ function OrderList() {
                                     <button
                                         type="button"
                                         onClick={() => incrementItem(item)}
-                                        disabled={item.quantity === item.stock}
+                                        disabled={item.orderQuantity === item.quantity}
                                         className="grid place-items-center px-2"
                                     >
                                         <Plus className="size-4" />
