@@ -18,7 +18,12 @@ import { Route as PublicImport } from './routes/_public'
 // Create Virtual Routes
 
 const PaymentLazyImport = createFileRoute('/payment')()
+const AdminLazyImport = createFileRoute('/admin')()
 const PublicIndexLazyImport = createFileRoute('/_public/')()
+const AdminProductLazyImport = createFileRoute('/admin/product')()
+const AdminDiscountLazyImport = createFileRoute('/admin/discount')()
+const AdminDashboardLazyImport = createFileRoute('/admin/dashboard')()
+const AdminCategoryLazyImport = createFileRoute('/admin/category')()
 const PublicCartLazyImport = createFileRoute('/_public/cart')()
 
 // Create/Update Routes
@@ -27,6 +32,11 @@ const PaymentLazyRoute = PaymentLazyImport.update({
   path: '/payment',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/payment.lazy').then((d) => d.Route))
+
+const AdminLazyRoute = AdminLazyImport.update({
+  path: '/admin',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/admin.lazy').then((d) => d.Route))
 
 const PublicRoute = PublicImport.update({
   id: '/_public',
@@ -37,6 +47,32 @@ const PublicIndexLazyRoute = PublicIndexLazyImport.update({
   path: '/',
   getParentRoute: () => PublicRoute,
 } as any).lazy(() => import('./routes/_public/index.lazy').then((d) => d.Route))
+
+const AdminProductLazyRoute = AdminProductLazyImport.update({
+  path: '/product',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() => import('./routes/admin/product.lazy').then((d) => d.Route))
+
+const AdminDiscountLazyRoute = AdminDiscountLazyImport.update({
+  path: '/discount',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/discount.lazy').then((d) => d.Route),
+)
+
+const AdminDashboardLazyRoute = AdminDashboardLazyImport.update({
+  path: '/dashboard',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/dashboard.lazy').then((d) => d.Route),
+)
+
+const AdminCategoryLazyRoute = AdminCategoryLazyImport.update({
+  path: '/category',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() =>
+  import('./routes/admin/category.lazy').then((d) => d.Route),
+)
 
 const PublicCartLazyRoute = PublicCartLazyImport.update({
   path: '/cart',
@@ -54,6 +90,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicImport
       parentRoute: typeof rootRoute
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/payment': {
       id: '/payment'
       path: '/payment'
@@ -67,6 +110,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/cart'
       preLoaderRoute: typeof PublicCartLazyImport
       parentRoute: typeof PublicImport
+    }
+    '/admin/category': {
+      id: '/admin/category'
+      path: '/category'
+      fullPath: '/admin/category'
+      preLoaderRoute: typeof AdminCategoryLazyImport
+      parentRoute: typeof AdminLazyImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardLazyImport
+      parentRoute: typeof AdminLazyImport
+    }
+    '/admin/discount': {
+      id: '/admin/discount'
+      path: '/discount'
+      fullPath: '/admin/discount'
+      preLoaderRoute: typeof AdminDiscountLazyImport
+      parentRoute: typeof AdminLazyImport
+    }
+    '/admin/product': {
+      id: '/admin/product'
+      path: '/product'
+      fullPath: '/admin/product'
+      preLoaderRoute: typeof AdminProductLazyImport
+      parentRoute: typeof AdminLazyImport
     }
     '/_public/': {
       id: '/_public/'
@@ -93,43 +164,105 @@ const PublicRouteChildren: PublicRouteChildren = {
 const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
+interface AdminLazyRouteChildren {
+  AdminCategoryLazyRoute: typeof AdminCategoryLazyRoute
+  AdminDashboardLazyRoute: typeof AdminDashboardLazyRoute
+  AdminDiscountLazyRoute: typeof AdminDiscountLazyRoute
+  AdminProductLazyRoute: typeof AdminProductLazyRoute
+}
+
+const AdminLazyRouteChildren: AdminLazyRouteChildren = {
+  AdminCategoryLazyRoute: AdminCategoryLazyRoute,
+  AdminDashboardLazyRoute: AdminDashboardLazyRoute,
+  AdminDiscountLazyRoute: AdminDiscountLazyRoute,
+  AdminProductLazyRoute: AdminProductLazyRoute,
+}
+
+const AdminLazyRouteWithChildren = AdminLazyRoute._addFileChildren(
+  AdminLazyRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteWithChildren
+  '/admin': typeof AdminLazyRouteWithChildren
   '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
+  '/admin/category': typeof AdminCategoryLazyRoute
+  '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/product': typeof AdminProductLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/admin': typeof AdminLazyRouteWithChildren
   '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
+  '/admin/category': typeof AdminCategoryLazyRoute
+  '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/product': typeof AdminProductLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_public': typeof PublicRouteWithChildren
+  '/admin': typeof AdminLazyRouteWithChildren
   '/payment': typeof PaymentLazyRoute
   '/_public/cart': typeof PublicCartLazyRoute
+  '/admin/category': typeof AdminCategoryLazyRoute
+  '/admin/dashboard': typeof AdminDashboardLazyRoute
+  '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/product': typeof AdminProductLazyRoute
   '/_public/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/payment' | '/cart' | '/'
+  fullPaths:
+    | ''
+    | '/admin'
+    | '/payment'
+    | '/cart'
+    | '/admin/category'
+    | '/admin/dashboard'
+    | '/admin/discount'
+    | '/admin/product'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/payment' | '/cart' | '/'
-  id: '__root__' | '/_public' | '/payment' | '/_public/cart' | '/_public/'
+  to:
+    | '/admin'
+    | '/payment'
+    | '/cart'
+    | '/admin/category'
+    | '/admin/dashboard'
+    | '/admin/discount'
+    | '/admin/product'
+    | '/'
+  id:
+    | '__root__'
+    | '/_public'
+    | '/admin'
+    | '/payment'
+    | '/_public/cart'
+    | '/admin/category'
+    | '/admin/dashboard'
+    | '/admin/discount'
+    | '/admin/product'
+    | '/_public/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
+  AdminLazyRoute: typeof AdminLazyRouteWithChildren
   PaymentLazyRoute: typeof PaymentLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
+  AdminLazyRoute: AdminLazyRouteWithChildren,
   PaymentLazyRoute: PaymentLazyRoute,
 }
 
@@ -146,6 +279,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_public",
+        "/admin",
         "/payment"
       ]
     },
@@ -156,12 +290,37 @@ export const routeTree = rootRoute
         "/_public/"
       ]
     },
+    "/admin": {
+      "filePath": "admin.lazy.tsx",
+      "children": [
+        "/admin/category",
+        "/admin/dashboard",
+        "/admin/discount",
+        "/admin/product"
+      ]
+    },
     "/payment": {
       "filePath": "payment.lazy.tsx"
     },
     "/_public/cart": {
       "filePath": "_public/cart.lazy.tsx",
       "parent": "/_public"
+    },
+    "/admin/category": {
+      "filePath": "admin/category.lazy.tsx",
+      "parent": "/admin"
+    },
+    "/admin/dashboard": {
+      "filePath": "admin/dashboard.lazy.tsx",
+      "parent": "/admin"
+    },
+    "/admin/discount": {
+      "filePath": "admin/discount.lazy.tsx",
+      "parent": "/admin"
+    },
+    "/admin/product": {
+      "filePath": "admin/product.lazy.tsx",
+      "parent": "/admin"
     },
     "/_public/": {
       "filePath": "_public/index.lazy.tsx",
