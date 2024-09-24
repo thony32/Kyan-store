@@ -13,7 +13,7 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     return (
         <div className="border rounded-lg px-4 py-2">
-            <img src={product.images[0]} alt={product.name} className="w-full h-40 object-contain mb-2" />
+            <img src={product.image_url} alt={product.name} className="w-full h-40 object-contain mb-2" />
             <button type="button" onClick={() => setOpenProduct(product)} className="text-sm font-bold truncate w-full">
                 {product.name}
             </button>
