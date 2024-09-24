@@ -42,7 +42,7 @@ export type Product = Entity<{
     name: string
     description: string
     price: number
-    stock: number
+    quantity: number
     brand: string
     model: string
     category_id: string
