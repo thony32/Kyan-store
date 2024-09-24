@@ -48,8 +48,7 @@ function LoginForm() {
 
     useEffect(() => {
         if (user && user.role === 'ADMIN') {
-            // MILA OVAINA
-            navigate({ to: '/payment' })
+            navigate({ to: '/admin/dashboard' })
         }
     }, [user])
 

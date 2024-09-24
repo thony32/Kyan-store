@@ -171,7 +171,7 @@ export default function Navbar() {
                             <>
                                 {user.role === 'ADMIN' && (
                                     <DropdownMenuItem asChild>
-                                        <Link to="/payment">
+                                        <Link to="/admin/dashboard">
                                             {' '}
                                             <LayoutGrid className="size-5 mr-4" /> Dashboard
                                         </Link>
