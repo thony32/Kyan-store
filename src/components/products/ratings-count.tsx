@@ -2,8 +2,11 @@ import type { Rating } from '@/types/api'
 import Star from '@/components/misc/star'
 
 function getRatingAverage(ratings: Rating[]) {
-    const average = ratings.reduce((acc, rating) => acc + rating.star, 0) / ratings.length
-    return Math.round(average * 10) / 10
+    if (ratings.length > 0) {
+        const average = ratings.reduce((acc, rating) => acc + rating.star, 0) / ratings.length
+        return Math.round(average * 10) / 10
+    }
+    return 0
 }
 
 export default function RatingsCount({ ratings }: { ratings: Rating[] }) {

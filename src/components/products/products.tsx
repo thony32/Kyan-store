@@ -13,8 +13,12 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     return (
         <div className="border rounded-lg px-4 py-2">
-            <img src={product.images[0]} alt={product.name} className="w-full h-40 object-contain mb-2" />
-            <button type="button" onClick={() => setOpenProduct(product)} className="text-sm font-bold truncate w-full">
+            {product.image_url ? (
+                <img src={product.image_url} alt={product.name} className="w-full h-40 object-contain mb-2" />
+            ) : (
+                <div className="w-full rounded h-40 aspect-square bg-gray-100 mb-2" />
+            )}
+            <button type="button" onClick={() => setOpenProduct(product)} className="text-sm text-left font-bold truncate w-full">
                 {product.name}
             </button>
             <div className="flex items-center space-x-2 mb-2">
@@ -23,7 +27,11 @@ const ProductCard = ({ product }: { product: Product }) => {
                     <span className="text-green-400">$</span>
                     {product.price - getDiscountAmount(product)}
                 </span>
-                <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">-{product.discount.percentage * 10}%</Badge>
+                {product.discount_percentage && (
+                    <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">
+                        -{product.discount_percentage * 10}%
+                    </Badge>
+                )}
             </div>
             <RatingsCount ratings={product.ratings} />
         </div>

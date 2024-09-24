@@ -5,7 +5,8 @@ import { persist } from 'zustand/middleware'
 
 // Assuming this function is available
 function getDiscountAmount(product: Product): number {
-    return Math.ceil((product.price * product.discount.percentage) / 10)
+    if (product.discount_percentage) return Math.ceil((product.price * product.discount_percentage) / 10)
+    return 0
 }
 
 type Item = {

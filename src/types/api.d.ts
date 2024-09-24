@@ -26,11 +26,6 @@ export type Category = Entity<{
     subcategories: Subcategory[]
 }>
 
-export type Discount = Entity<{
-    percentage: number
-    valid_until: Date
-}>
-
 export type Rating = Entity<{
     id: string
     star: number
@@ -51,6 +46,8 @@ export type Product = Entity<{
     subcategory_name: string
     image_id: string | null
     image_url: string | null
-    discount: Discount
+    discount_id: null
+    discount_percentage: null
+    discount_validity: null
     ratings: Rating[]
 }>

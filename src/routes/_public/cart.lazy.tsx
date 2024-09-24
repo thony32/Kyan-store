@@ -158,7 +158,12 @@ function OrderList() {
             <div className="col-span-2 space-y-4">
                 {items.map((item) => (
                     <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
-                        <img src={item.images[0]} alt={item.name} className="w-full max-w-52 aspect-square object-contain" />
+                        {item.image_url ? (
+                            <img src={item.image_url} alt={item.name} className="w-full max-w-52 aspect-square object-contain" />
+                        ) : (
+                            <div className="w-52 h-52 bg-gray-50 rounded-md" />
+                        )}
+
                         <div className="flex flex-col gap-2">
                             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
                             <h3 className="line-clamp-2 cursor-pointer" onClick={() => setOpenItem(item)}>

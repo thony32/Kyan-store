@@ -1,6 +1,5 @@
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 import { useViewItemStore } from '@/store/view-item-store'
-import ThumbnailSlider from './thumbnail-slider'
 import getDiscountAmount from '@/utils/get-discount-amount'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -32,7 +31,9 @@ export default function ViewItemDialog() {
                 <DialogDescription className="sr-only" />
                 {itemToView ? (
                     <div className="flex gap-6 items-center">
-                        <ThumbnailSlider images={itemToView.images} />
+                        <div className="w-full aspect-square grid bg-gray-100 rounded-3xl overflow-hidden">
+                            {itemToView.image_url && <img src={itemToView.image_url} alt={itemToView.name} className="w-full h-full object-cover" />}
+                        </div>
                         <div className="flex flex-col gap-5 p-5 w-full" style={{ opacity: 1, transform: 'none' }}>
                             <h2 className="text-xl font-semibold line-clamp-3">{itemToView.name}</h2>
                             <div className="flex justify-between items-center">
@@ -44,9 +45,11 @@ export default function ViewItemDialog() {
                                             {itemToView.price - getDiscountAmount(itemToView)}
                                         </span>
                                     </div>
-                                    <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">
-                                        -{itemToView.discount.percentage * 10}%
-                                    </Badge>
+                                    {itemToView.discount_percentage && (
+                                        <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">
+                                            -{itemToView.discount_percentage * 10}%
+                                        </Badge>
+                                    )}
                                 </div>
                                 <RatingsCount ratings={itemToView.ratings} />
                             </div>
