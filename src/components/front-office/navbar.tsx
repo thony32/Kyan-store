@@ -1,3 +1,4 @@
+import { useLogoutMutation } from '@/api/auth'
 import SearchIllustration from '@/components/misc/search-illustration'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -11,14 +12,13 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
+import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
 import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
 import AuthDialog from './auth-dialog'
-import { useAuthStore } from '@/store/auth-store'
-import { useLogoutMutation } from '@/api/auth'
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user)
@@ -148,7 +148,7 @@ export default function Navbar() {
                     </svg>
                     {items.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 shadow-none rounded-full text-base scale-75" variant="destructive">
-                            {items.reduce((sum, item) => sum + item.quantity, 0)}
+                            {items.reduce((sum, item) => sum + item.orderQuantity, 0)}
                         </Badge>
                     )}
                 </Link>
@@ -171,7 +171,7 @@ export default function Navbar() {
                             <>
                                 {user.role === 'ADMIN' && (
                                     <DropdownMenuItem asChild>
-                                        <Link to="/payment">
+                                        <Link to="/admin/dashboard">
                                             {' '}
                                             <LayoutGrid className="size-5 mr-4" /> Dashboard
                                         </Link>

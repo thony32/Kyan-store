@@ -1,16 +1,16 @@
-import { type LoginInput, loginInput, registerInput, type RegisterInput, useLoginMutation, useRegisterMutation } from '@/api/auth'
+import { type LoginInput, type RegisterInput, loginInput, registerInput, useLoginMutation, useRegisterMutation } from '@/api/auth'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircleIcon, LoaderPinwheel } from 'lucide-react'
-import { PasswordField } from '../ui/password-input'
-import { useEffect } from 'react'
 import { useAuthStore } from '@/store/auth-store'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
+import { AlertCircleIcon, LoaderPinwheel } from 'lucide-react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { PasswordField } from '../ui/password-input'
 
 export default function AuthDialog() {
     return (
@@ -48,8 +48,7 @@ function LoginForm() {
 
     useEffect(() => {
         if (user && user.role === 'ADMIN') {
-            // MILA OVAINA
-            navigate({ to: '/payment' })
+            navigate({ to: '/admin/dashboard' })
         }
     }, [user])
 

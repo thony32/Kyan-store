@@ -8,7 +8,7 @@ const Topbar = () => {
     const match = useLocation().pathname
     const currentPageName = match.split('/').pop()
     return (
-        <div className="flex justify-between py-4">
+        <div className="flex justify-between px-8 py-4">
             <h1 className="text-2xl font-bold capitalize">{currentPageName}</h1>
             <DropdownMenu>
                 <DropdownMenuTrigger>
