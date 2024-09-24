@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 
 export const getProducts = async (): Promise<Product[]> => {
     const response = await api.get('/product')
-
     return response.data
 }
 

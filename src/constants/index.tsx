@@ -1,6 +1,7 @@
 // import headphones from "@/components/assets/img/headphones.png";
 import joystick from '@/components/assets/img/joystick.png'
 import type { Category, Product } from '@/types/api'
+import { BarChart, Box, Currency, Percent } from 'lucide-react'
 
 export const trendingProduct = [
     {
@@ -284,3 +285,32 @@ export const categories: Category[] = [
         ]
     }
 ]
+
+type Links = {
+    name: string
+    href: string
+    icon: JSX.Element
+}
+
+export const adminLinks = [
+    {
+        name: 'Dashboard',
+        href: '/admin/dashboard',
+        icon: <BarChart />
+    },
+    {
+        name: 'Products',
+        href: '/admin/product',
+        icon: <Box />
+    },
+    {
+        name: 'Categories',
+        href: '/admin/category',
+        icon: <Currency />
+    },
+    {
+        name: 'Discount',
+        href: '/admin/discount',
+        icon: <Percent />
+    }
+] as Links[]
