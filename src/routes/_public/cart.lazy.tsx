@@ -184,7 +184,7 @@ function OrderList() {
                                     >
                                         <Minus className="size-4" />
                                     </button>
-                                    <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.quantity}</span>
+                                    <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.orderQuantity}</span>
                                     <button
                                         type="button"
                                         onClick={() => incrementItem(item)}

@@ -148,7 +148,7 @@ export default function Navbar() {
                     </svg>
                     {items.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 shadow-none rounded-full text-base scale-75" variant="destructive">
-                            {items.reduce((sum, item) => sum + item.quantity, 0)}
+                            {items.reduce((sum, item) => sum + item.orderQuantity, 0)}
                         </Badge>
                     )}
                 </Link>
