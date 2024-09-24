@@ -49,7 +49,8 @@ export type Product = Entity<{
     category_name: string
     subcategory_id: string
     subcategory_name: string
-    images: string[]
+    image_id: string | null
+    image_url: string | null
     discount: Discount
     ratings: Rating[]
 }>
