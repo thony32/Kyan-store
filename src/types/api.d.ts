@@ -9,11 +9,15 @@ export type Entity<T> = {
 
 export type User = Entity<{
     email: string
-    firstname: string
-    lastname: string
-    phone: string
-    role: 'ADMIN' | 'CLIENT'
+    first_name: string
+    last_name: string
+    role: 'ADMIN' | 'CUSTOMER'
 }>
+
+export type AuthResponse = {
+    access_token: string
+    refresh_token: string
+} & Omit<User, 'id'>
 
 export type Subcategory = Entity<{
     name: string

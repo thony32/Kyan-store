@@ -17,17 +17,15 @@ import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
 import AuthDialog from './auth-dialog'
+import { useAuthStore } from '@/store/auth-store'
+import { useLogoutMutation } from '@/api/auth'
 
-const useAuth = () => ({
-    isAuthenticated: false,
-    // role: "ADMIN",
-    role: 'USER'
-})
 export default function Navbar() {
-    const { isAuthenticated, role } = useAuth()
+    const user = useAuthStore((state) => state.user)
     const items = useCartStore((state) => state.items)
     const shouldAuth = useAuthDialogStore((state) => state.shouldOpen)
     const setShouldAuth = useAuthDialogStore((state) => state.setShouldOpen)
+    const logoutMutation = useLogoutMutation()
 
     const [search, setSearch] = useState('')
     // const debounced = useDebounceCallback(setSearch, 500); //Appel de fonction
@@ -169,14 +167,17 @@ export default function Navbar() {
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        {isAuthenticated ? (
+                        {user ? (
                             <>
-                                {role === 'ADMIN' && (
-                                    <DropdownMenuItem>
-                                        <LayoutGrid className="size-5 mr-4" /> Backoffice
+                                {user.role === 'ADMIN' && (
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/payment">
+                                            {' '}
+                                            <LayoutGrid className="size-5 mr-4" /> Dashboard
+                                        </Link>
                                     </DropdownMenuItem>
                                 )}
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
                                     <LogOutIcon className="size-5 mr-4" /> Se déconnecter
                                 </DropdownMenuItem>
                             </>
