@@ -1,7 +1,6 @@
 import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import ReactLenis from 'lenis/react'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -30,11 +29,9 @@ if (!rootElement.innerHTML) {
         <StrictMode>
             <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <QueryClientProvider client={queryClient}>
-                    <ReactLenis root>
-                        <HelmetProvider>
-                            <RouterProvider router={router} />
-                        </HelmetProvider>
-                    </ReactLenis>
+                    <HelmetProvider>
+                        <RouterProvider router={router} />
+                    </HelmetProvider>
                 </QueryClientProvider>
             </ErrorBoundary>
         </StrictMode>

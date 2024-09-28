@@ -90,14 +90,14 @@ export default function ViewItemDialog() {
                                         <div key={rating.id} className="flex items-start gap-2">
                                             <Avatar className="size-6">
                                                 <AvatarFallback className="bg-violet-950 text-sm text-primary-foreground">
-                                                    {rating.user.lastname[0]}
-                                                    {rating.user.firstname[0]}
+                                                    {rating.user.last_name[0]}
+                                                    {rating.user.first_name[0]}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <div className="flex gap-6 items-center">
                                                     <p className="font-medium text-xs">
-                                                        {rating.user.lastname} {rating.user.firstname}
+                                                        {rating.user.last_name} {rating.user.first_name}
                                                     </p>
                                                     <div className="flex items-center gap-1">
                                                         <Star className="text-yellow-400" />
