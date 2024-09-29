@@ -46,12 +46,13 @@ export type Product = Entity<{
     model: string
     category_id: string
     category_name: string
-    subcategory_id: string
-    subcategory_name: string
+    subcategory_id: string | null
+    subcategory_name: string | null
     image_id: string | null
     image_url: string | null
     discount_id: null
     discount_percentage: null
     discount_validity: null
     ratings: Rating[]
+    is_available: boolean
 }>

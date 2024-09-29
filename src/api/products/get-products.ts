@@ -1,5 +1,6 @@
 import { api } from '@/libs/api-client'
 import type { QueryConfig } from '@/libs/react-query'
+import { supabase } from '@/libs/supabase-client'
 import type { Product } from '@/types/api'
 import { useQuery } from '@tanstack/react-query'
 
@@ -8,9 +9,32 @@ export const getProducts = async (): Promise<Product[]> => {
     return response.data
 }
 
+export const getSupabaseProducts = async (): Promise<Product[]> => {
+    const { data, error } = await supabase
+        .from('product')
+        .select('*, category:category_id(name), subcategory:subcategory_id(name), ratings:rating(*), image(*), discount(*)')
+
+    if (error) {
+        throw error
+    }
+
+    return data.map((product) => ({
+        ...product,
+        quantity: product.stock_quantity,
+        category_name: product.category.name,
+        subcategory_name: product.subcategory ? product.subcategory.name : null,
+        discount_id: product.discount?.id,
+        discount_percentage: product.discount?.percentage,
+        discount_validity: product.discount?.validity,
+        image_id: product.image?.id,
+        image_url: product.image?.url,
+        is_available: true
+    }))
+}
+
 export const getProductsQueryOptions = () => ({
     queryKey: ['products'],
-    queryFn: getProducts
+    queryFn: getSupabaseProducts
 })
 
 type UseProductsOptions = {

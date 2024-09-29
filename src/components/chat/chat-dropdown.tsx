@@ -4,8 +4,11 @@ import IALogo from '../misc/ia-logo'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
+import { useMatch } from '@tanstack/react-router'
 
 const ChatDropdown = () => {
+    const match = useMatch({ from: '/admin', shouldThrow: false })
+    if (match) return null
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
