@@ -15,7 +15,7 @@ export const getSupabaseProducts = async (): Promise<Product[]> => {
         .select('*, category:category_id(name), subcategory:subcategory_id(name), ratings:rating(*), image(*), discount(*)')
 
     if (error) {
-        throw error
+        throw new Error(error.message)
     }
 
     return data.map((product) => ({
@@ -27,8 +27,7 @@ export const getSupabaseProducts = async (): Promise<Product[]> => {
         discount_percentage: product.discount?.percentage,
         discount_validity: product.discount?.validity,
         image_id: product.image?.id,
-        image_url: product.image?.url,
-        is_available: true
+        image_url: product.image?.url
     }))
 }
 
