@@ -1,3 +1,4 @@
+import { useCategories } from '@/api/categories/get-categories'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { createLazyFileRoute } from '@tanstack/react-router'
 
 const AdminProduct = () => {
+    const { data: categories } = useCategories({})
+
     return (
         <div className="p-8 space-y-8">
             {/* Formulaire d'ajout de produit */}
@@ -65,9 +68,11 @@ const AdminProduct = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
-                                    <SelectItem value="1">Category 1</SelectItem>
-                                    <SelectItem value="2">Category 2</SelectItem>
-                                    <SelectItem value="3">Category 3</SelectItem>
+                                    {categories?.map((category) => (
+                                        <SelectItem key={category.id} value={category.id}>
+                                            {category.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
