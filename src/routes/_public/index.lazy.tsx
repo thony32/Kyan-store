@@ -6,7 +6,7 @@ import { createLazyFileRoute } from '@tanstack/react-router'
 const Landing = () => {
     return (
         <div className="grid grid-cols-12">
-            <div className="px-12 py-6 col-span-2 bg-gradient-to-br from-[#FFCED6] via-[#EDF2FE] to-[#C1D0FF] ">
+            <div className="min-h-[100dvh] px-12 py-6 col-span-2 bg-gradient-to-br from-[#FFCED6] via-[#EDF2FE] to-[#C1D0FF] ">
                 <ProductsFilter />
             </div>
             <div className="px-12 py-6 col-span-10 space-y-8">

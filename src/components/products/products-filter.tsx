@@ -16,7 +16,7 @@ const ProductsFilter: FC = () => {
     }
 
     return (
-        <div className="flex flex-col gap-8 items-start min-h-[100dvh]">
+        <div className="fixed flex flex-col gap-8 items-start min-h-[100dvh]">
             <h1 className="font-extrabold text-lg">Catégories</h1>
             {status === 'pending' ? (
                 Array.from({ length: 5 }).map((_, idx) => (

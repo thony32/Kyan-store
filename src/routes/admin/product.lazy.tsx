@@ -153,7 +153,9 @@ const ProductList = ({ data }: { data: Product[] }) => {
                     </TableCell>
                     <TableCell className="font-medium max-w-xs truncate">{product.name}</TableCell>
                     <TableCell>
-                        <Badge variant="outline">{product.is_available ? 'Disponible' : 'Indisponible'}</Badge>
+                        <Badge variant={product.is_available ? 'outline' : 'destructive'}>
+                            {product.is_available ? 'Disponible' : 'Indisponible'}
+                        </Badge>
                     </TableCell>
                     <TableCell>${product.price}</TableCell>
                     <TableCell className="hidden md:table-cell">{product.quantity}</TableCell>
@@ -168,9 +170,6 @@ const ProductList = ({ data }: { data: Product[] }) => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>
-                                    <Pencil className="size-4 mr-3" /> Modifier
-                                </DropdownMenuItem>
                                 <DropdownMenuItem>
                                     <Trash2 className="size-4 mr-3" /> Supprimer
                                 </DropdownMenuItem>

@@ -1,10 +1,11 @@
-import joystick from '@/components/assets/img/joystick.png'
+import { useMatch } from '@tanstack/react-router'
 import { X } from 'lucide-react'
 import IALogo from '../misc/ia-logo'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
-import { useMatch } from '@tanstack/react-router'
+import { BotResponse, BotResponseProduct } from './bot-response'
+import UserMessage from './user-message'
 
 const ChatDropdown = () => {
     const match = useMatch({ from: '/admin', shouldThrow: false })
@@ -39,38 +40,13 @@ const ChatDropdown = () => {
                     {/* Chat Body */}
                     <div className="p-4 space-y-4">
                         {/* User Message */}
-                        <div className="flex justify-end">
-                            <div className="bubble-user relative bg-purple-600 text-white rounded-lg px-3 py-2 max-w-xs">
-                                Aides moi à trouver le produit idéal s'il te plaît!
-                            </div>
-                        </div>
+                        <UserMessage />
 
                         {/* Bot Response */}
-                        <div className="flex justify-start">
-                            <div className="bubble-bot relative bg-gray-200 text-foreground rounded-lg px-3 py-2 max-w-xs">
-                                Voici une liste de produits populaire
-                            </div>
-                        </div>
+                        <BotResponse />
 
                         {/* Product List */}
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="flex flex-col items-start">
-                                <img src={joystick} alt="Product 1" className="w-20 h-20 object-contain mb-2" />
-                                <p className="text-xs">Sony WH-1000XM3 Bluetooth...</p>
-                                <div className="text-sm">
-                                    <span className="line-through text-gray-500">$773</span> <span className="text-green-500">$688</span>{' '}
-                                    <span className="text-red-500">-11%</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col items-start">
-                                <img src={joystick} alt="Product 2" className="w-20 h-20 object-contain mb-2" />
-                                <p className="text-xs">Sony WH-1000XM3 Bluetooth...</p>
-                                <div className="text-sm">
-                                    <span className="line-through text-gray-500">$773</span> <span className="text-green-500">$688</span>{' '}
-                                    <span className="text-red-500">-11%</span>
-                                </div>
-                            </div>
-                        </div>
+                        <BotResponseProduct />
 
                         {/* User Message */}
                         <div className="flex justify-end">
