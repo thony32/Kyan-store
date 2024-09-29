@@ -1,5 +1,6 @@
+import { useLogoutMutation } from '@/api/auth'
 import { useLocation } from '@tanstack/react-router'
-import { ChevronDown } from 'lucide-react'
+import { LogOutIcon } from 'lucide-react'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
@@ -7,20 +8,23 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const Topbar = () => {
     const match = useLocation().pathname
     const currentPageName = match.split('/').pop()
+    const logoutMutation = useLogoutMutation()
     return (
-        <div className="flex justify-between py-4">
+        <div className="flex justify-between px-8 py-4">
             <h1 className="text-2xl font-bold capitalize">{currentPageName}</h1>
             <DropdownMenu>
                 <DropdownMenuTrigger>
-                    <Button className="flex gap-2 items-center" variant="ghost">
+                    <Button variant="ghost" size="icon" className="flex gap-2 items-center rounded-full">
                         <Avatar>
                             <AvatarFallback>AD</AvatarFallback>
                         </Avatar>
-                        <ChevronDown />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem>Log out</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
+                        <LogOutIcon className="size-5 mr-4" />
+                        Log out
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

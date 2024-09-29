@@ -1,3 +1,4 @@
+import { useLogoutMutation } from '@/api/auth'
 import SearchIllustration from '@/components/misc/search-illustration'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -11,14 +12,13 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
+import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
 import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useState } from 'react'
 import AuthDialog from './auth-dialog'
-import { useAuthStore } from '@/store/auth-store'
-import { useLogoutMutation } from '@/api/auth'
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user)
