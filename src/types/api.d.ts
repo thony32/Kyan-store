@@ -31,10 +31,11 @@ export type Category = Entity<{
 }>
 
 export type Rating = Entity<{
-    id: string
     star: number
     comment: string
-    user: User
+    user_id: string
+    username: string
+    product_id: string
 }>
 
 export type Product = Entity<{

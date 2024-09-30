@@ -3,12 +3,10 @@ import { getCookie, removeCookie, setCookie } from 'react-use-cookie'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-export type UserAuth = Omit<User, 'id'>
-
 interface AuthState {
     token: string | null
-    user: UserAuth | null
-    setAuth: (token: string, user: UserAuth) => void
+    user: User | null
+    setAuth: (token: string, user: User) => void
     clearAuth: () => void
 }
 
@@ -16,7 +14,7 @@ export const useAuthStore = create<AuthState>()(
     immer((set) => ({
         token: getCookie('jwt'),
         user: getCookie('user') ? JSON.parse(getCookie('user')) : null,
-        setAuth: (token: string, user: UserAuth) =>
+        setAuth: (token: string, user: User) =>
             set((state) => {
                 state.token = token
                 state.user = user

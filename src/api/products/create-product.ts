@@ -1,11 +1,11 @@
-import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
+import { supabase } from '@/libs/supabase-client'
 import type { Product } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { getProductsQueryOptions } from './get-products'
-import { supabase } from '@/libs/supabase-client'
-import { toast } from 'sonner'
 
 export const createProductInputSchema = z.object({
     name: z.string().min(1, 'Le nom est requis'),
@@ -51,7 +51,7 @@ function convertToSupabaseProduct(product: CreateProductInput): {
     is_available: boolean
 } {
     return {
-        id: 'c422d726-8c26-40a5-90b6-3f8be6afa8b6', // paste a genereted uuid
+        id: uuidv4(), // paste a genereted uuid
         name: product.name,
         description: product.description,
         price: product.price,

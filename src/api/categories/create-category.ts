@@ -1,11 +1,11 @@
-import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
+import { supabase } from '@/libs/supabase-client'
 import type { Category } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { getCategoriesQueryOptions } from './get-categories'
-import { supabase } from '@/libs/supabase-client'
-import { toast } from 'sonner'
 
 export const createCategoryInputSchema = z.object({
     name: z.string().min(1, 'Le nom est requis'),
@@ -29,12 +29,12 @@ export function convertToSupabaseCategory(category: CreateCategoryInput): {
 } {
     if (category.isMainCategory)
         return {
-            id: '71fcacca-1d32-4cd7-b953-4b4eaa38a963', // paste a generated UUID
+            id: uuidv4(),
             name: category.name,
             is_main_category: category.isMainCategory
         }
     return {
-        id: '0a9da21c-e0be-475f-817c-fef69f36e990', // paste a generated UUID
+        id: uuidv4(),
         name: category.name,
         category_id: category.categoryId
     }

@@ -37,7 +37,7 @@ export const getProductsQueryOptions = () => ({
 })
 
 type UseProductsOptions = {
-    queryConfig?: QueryConfig<typeof getProductsQueryOptions>
+    queryConfig?: QueryConfig<typeof getProducts>
 }
 
 export const useProducts = ({ queryConfig }: UseProductsOptions) => {
