@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { getProductsQueryOptions } from './get-products'
 import { supabase } from '@/libs/supabase-client'
+import { toast } from 'sonner'
 
 export const createProductInputSchema = z.object({
     name: z.string().min(1, 'Le nom est requis'),
@@ -22,7 +23,7 @@ export const createProductInputSchema = z.object({
 
 export type CreateProductInput = z.infer<typeof createProductInputSchema>
 
-export const defaultProductValues: CreateProductInput = {
+export const defaultValues: CreateProductInput = {
     name: '',
     description: '',
     imageUrl: '',
@@ -31,9 +32,9 @@ export const defaultProductValues: CreateProductInput = {
     brand: '',
     model: '',
     categoryId: '',
-    isAvailable: true,
     subCategoryId: '',
-    discountId: ''
+    discountId: '',
+    isAvailable: true
 }
 
 function convertToSupabaseProduct(product: CreateProductInput): {
@@ -50,7 +51,7 @@ function convertToSupabaseProduct(product: CreateProductInput): {
     is_available: boolean
 } {
     return {
-        id: '012c2746-cbf8-4955-ad84-fb2f073de026', // paste a genereted uuid
+        id: 'c422d726-8c26-40a5-90b6-3f8be6afa8b6', // paste a genereted uuid
         name: product.name,
         description: product.description,
         price: product.price,
@@ -109,6 +110,7 @@ export const useCreateProduct = ({ mutationConfig }: UseCreateProductOptions) =>
             queryClient.invalidateQueries({
                 queryKey: getProductsQueryOptions().queryKey
             })
+            toast.success('Produit créé avec succès')
             onSuccess?.(...args)
         },
         onError: (error) => {

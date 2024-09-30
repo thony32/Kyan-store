@@ -15,6 +15,12 @@ export const createCategoryInputSchema = z.object({
 
 export type CreateCategoryInput = z.infer<typeof createCategoryInputSchema>
 
+export const defaultValues: CreateCategoryInput = {
+    name: '',
+    isMainCategory: true,
+    categoryId: ''
+}
+
 export function convertToSupabaseCategory(category: CreateCategoryInput): {
     id: string
     name: string
@@ -23,12 +29,12 @@ export function convertToSupabaseCategory(category: CreateCategoryInput): {
 } {
     if (category.isMainCategory)
         return {
-            id: '012c2746-cbf8-4955-ad84-fb2f073de026', // paste a generated UUID
+            id: '71fcacca-1d32-4cd7-b953-4b4eaa38a963', // paste a generated UUID
             name: category.name,
             is_main_category: category.isMainCategory
         }
     return {
-        id: '012c2746-cbf8-4955-ad84-fb2f073de026', // paste a generated UUID
+        id: '0a9da21c-e0be-475f-817c-fef69f36e990', // paste a generated UUID
         name: category.name,
         category_id: category.categoryId
     }

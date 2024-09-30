@@ -1,81 +1,80 @@
-import { type Dispatch, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
 
 import { Button } from '@/components/ui/button'
 import { LoaderPinwheel, PlusCircle } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { createProductInputSchema, useCreateProduct, type CreateProductInput } from '@/api/products/create-product'
+import { defaultValues, useCreateProduct, type CreateProductInput } from '@/api/products/create-product'
 import { useCategories } from '@/api/categories/get-categories'
-import { toast } from 'sonner'
 import { useUpdateProduct } from '@/api/products/update-product'
 import type { Product } from '@/types/api'
+import { useItemStore } from '@/store/edit-item-store'
+import { useQueryClient } from '@tanstack/react-query'
+import { getProductsQueryOptions } from '@/api/products/get-products'
+import { Label } from '@/components/ui/label'
 
-export default function ProductForm({
-    productEdit,
-    setProductEdit
-}: {
-    productEdit?: Product
-    setProductEdit: Dispatch<React.SetStateAction<Product | undefined>>
-}) {
+export default function ProductForm() {
     const [open, setOpen] = useState(false)
+    const productItem = useItemStore((state) => state.item)
+    const setProductItem = useItemStore((state) => state.setItem)
+    const queryClient = useQueryClient()
 
-    // STRUGGLE WITH THE DEFAULT VALUES PART
+    const [productEdit, setProductEdit] = useState<CreateProductInput>(defaultValues)
 
-    const form = useForm<CreateProductInput>({
-        resolver: zodResolver(createProductInputSchema),
-        defaultValues: {
-            name: productEdit?.name,
-            description: productEdit?.description || '',
-            imageUrl: '',
-            stockQuantity: 0,
-            price: 0,
-            brand: '',
-            model: '',
-            categoryId: '',
-            isAvailable: true,
-            subCategoryId: '',
-            discountId: ''
-        }
-    })
     const { data: categoriesData, status: categoriesStatus } = useCategories({})
     const createMutation = useCreateProduct({})
     const updateMutation = useUpdateProduct({})
 
-    function onSubmit(values: CreateProductInput) {
-        if (productEdit) updateMutation.mutate({ productId: productEdit.id, values })
-        createMutation.mutate({ values })
+    function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        if (productItem)
+            updateMutation.mutate({
+                productId: productItem.id,
+                values: productEdit
+            })
+        else createMutation.mutate({ values: productEdit })
     }
 
     useEffect(() => {
-        if (productEdit) {
-            setOpen(true)
-        }
-    }, [productEdit])
-
-    useEffect(() => {
-        if (!open) {
-            form.reset()
-        }
-    }, [open, form])
-
-    useEffect(() => {
-        if (createMutation.isSuccess) {
+        if (createMutation.isSuccess || updateMutation.isSuccess) {
             setOpen(false)
-            toast.success('Produit ajouté avec succès')
         }
-    }, [createMutation.isSuccess])
+    }, [createMutation.isSuccess, updateMutation.isSuccess])
+
+    useEffect(() => {
+        if (productItem) {
+            setOpen(true)
+            const productFound = queryClient
+                .getQueryData<Product[]>(getProductsQueryOptions().queryKey)!
+                .find((product) => product.id === productItem.id)!
+
+            setProductEdit({
+                name: productFound.name,
+                description: productFound.description,
+                imageUrl: productFound.image_url || '',
+                stockQuantity: productFound.quantity,
+                price: productFound.price,
+                brand: productFound.brand,
+                model: productFound.model,
+                categoryId: productFound.category_id,
+                subCategoryId: productFound.subcategory_id || '',
+                discountId: productFound.discount_id || '',
+                isAvailable: productFound.is_available
+            })
+        }
+    }, [productItem])
 
     return (
         <Drawer
             open={open}
             onOpenChange={(o) => {
                 setOpen(o)
-                if (!o) setProductEdit(undefined)
+                if (!o) {
+                    setProductItem(null)
+                    setProductEdit(defaultValues)
+                }
             }}
         >
             <DrawerTrigger asChild>
@@ -84,228 +83,221 @@ export default function ProductForm({
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Ajouter Produit</span>
                 </Button>
             </DrawerTrigger>
-            <DrawerContent className="w-screen max-w-screen-lg">
+            <DrawerContent>
                 <div className="mx-auto max-w-screen-lg w-full max-h-[calc(100vh_-_2rem)] overflow-y-auto">
                     <DrawerHeader className="sticky h-fit top-0 bg-background p-4 z-20">
                         <DrawerTitle className="text-2xl font-heading font-bold text-center">
-                            {productEdit?.id ? 'Modifier le produit' : 'Ajouter un produit'}
+                            {productItem?.id ? 'Modifier le produit' : 'Ajouter un produit'}
                         </DrawerTitle>
                         <DrawerDescription className="text-center">Les informations ci-dessous sont nécessaires.</DrawerDescription>
                     </DrawerHeader>
                     <div className="p-4 pb-0">
-                        <Form {...form}>
-                            <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-2 gap-8 pb-4">
-                                <div className="space-y-5">
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nom</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="Nom du produit" required {...field} />
-                                                </FormControl>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                        <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-8 pb-4">
+                            <div className="space-y-4">
+                                <div className="grid gap-2">
+                                    <Label>Nom</Label>
+                                    <Input
+                                        placeholder="Nom du produit"
+                                        required
+                                        value={productEdit.name}
+                                        onChange={(e) =>
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                name: e.target.value
+                                            }))
+                                        }
                                     />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="description"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Description</FormLabel>
-                                                <FormControl>
-                                                    <Textarea placeholder="Description du produit" className="resize-none" {...field} />
-                                                </FormControl>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>Description</Label>
+                                    <Textarea
+                                        placeholder="Description du produit"
+                                        className="resize-none"
+                                        value={productEdit.description}
+                                        onChange={(e) =>
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                description: e.target.value
+                                            }))
+                                        }
                                     />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="imageUrl"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Lien image</FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="https://example.com/produit.png" required {...field} />
-                                                </FormControl>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label>Lien image</Label>
+                                    <Input
+                                        placeholder="https://example.com/produit.png"
+                                        required
+                                        value={productEdit.imageUrl}
+                                        onChange={(e) =>
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                imageUrl: e.target.value
+                                            }))
+                                        }
                                     />
+                                </div>
 
-                                    <div className="flex items-baseline gap-6">
-                                        <FormField
-                                            control={form.control}
-                                            name="stockQuantity"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>En stock</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Nbr de produit en stock" required type="number" {...field} />
-                                                    </FormControl>
-
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                <div className="flex items-baseline gap-6">
+                                    <div className="grid gap-2">
+                                        <Label>En stock</Label>
+                                        <Input
+                                            placeholder="Nbr de produit en stock"
+                                            required
+                                            value={productEdit.stockQuantity}
+                                            type="number"
+                                            onChange={(e) =>
+                                                setProductEdit((prev) => ({
+                                                    ...prev,
+                                                    stockQuantity: Number.parseInt(e.target.value)
+                                                }))
+                                            }
                                         />
-                                        <FormField
-                                            control={form.control}
-                                            name="price"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Prix unitaire</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="prix en dollar" required type="number" {...field} />
-                                                    </FormControl>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label>Prix unitaire</Label>
+                                        <Input
+                                            placeholder="prix en dollar"
+                                            required
+                                            value={productEdit.price}
+                                            type="number"
+                                            onChange={(e) =>
+                                                setProductEdit((prev) => ({
+                                                    ...prev,
+                                                    price: Number.parseInt(e.target.value)
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                            <div className="grid space-y-4">
+                                <div className="flex items-baseline gap-6">
+                                    <div className="grid gap-2">
+                                        <Label>Marque</Label>
+                                        <Input
+                                            placeholder="Marque du produit"
+                                            required
+                                            value={productEdit.brand}
+                                            onChange={(e) =>
+                                                setProductEdit((prev) => ({
+                                                    ...prev,
+                                                    brand: e.target.value
+                                                }))
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label>Modèle</Label>
+                                        <Input
+                                            placeholder="Modèle du produit"
+                                            required
+                                            value={productEdit.model}
+                                            onChange={(e) =>
+                                                setProductEdit((prev) => ({
+                                                    ...prev,
+                                                    model: e.target.value
+                                                }))
+                                            }
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid space-y-4">
-                                    <div className="flex items-baseline gap-6">
-                                        <FormField
-                                            control={form.control}
-                                            name="brand"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Marque</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Marque du produit" required {...field} />
-                                                    </FormControl>
+                                <div className="grid gap-2">
+                                    <Label>Catégorie</Label>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                categoryId: value
+                                            }))
+                                        }}
+                                        value={productEdit.categoryId}
+                                    >
+                                        <SelectTrigger className="text-muted-foreground" disabled={categoriesStatus !== 'success'}>
+                                            <SelectValue placeholder="Sélectionner son parent" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {categoriesStatus === 'success' &&
+                                                categoriesData.map((category) => (
+                                                    <SelectItem className="capitalize" key={category.id} value={category.id}>
+                                                        {category.name}
+                                                    </SelectItem>
+                                                ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="model"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Modèle</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="Modèle du produit" required {...field} />
-                                                    </FormControl>
+                                <div className="grid gap-2">
+                                    <Label>Sous catégorie</Label>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                subCategoryId: value
+                                            }))
+                                        }}
+                                        value={productEdit.subCategoryId}
+                                    >
+                                        <SelectTrigger
+                                            className="text-muted-foreground"
+                                            disabled={categoriesStatus !== 'success' || !productEdit.categoryId}
+                                        >
+                                            <SelectValue placeholder="Sélectionner son parent" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {categoriesStatus === 'success' &&
+                                                categoriesData
+                                                    .find((category) => category.id === productEdit.categoryId)
+                                                    ?.subcategories.map((subcategory) => (
+                                                        <SelectItem className="capitalize" key={subcategory.id} value={subcategory.id}>
+                                                            {subcategory.name}
+                                                        </SelectItem>
+                                                    ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
 
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <FormField
-                                        control={form.control}
-                                        name="categoryId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Categorie</FormLabel>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    defaultValue={field.value}
-                                                    disabled={categoriesStatus !== 'success'}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger className="text-muted-foreground">
-                                                            <SelectValue placeholder="Sélectionner une catégorie" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {categoriesStatus === 'success' &&
-                                                            categoriesData.map((category) => (
-                                                                <SelectItem className="capitalize" key={category.id} value={category.id}>
-                                                                    {category.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                    </SelectContent>
-                                                </Select>
-
-                                                <FormMessage />
-                                            </FormItem>
+                                <div className="grid gap-2">
+                                    <Label>Promotion</Label>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            setProductEdit((prev) => ({
+                                                ...prev,
+                                                discountId: value
+                                            }))
+                                        }}
+                                        value={productEdit.discountId}
+                                    >
+                                        <SelectTrigger
+                                            className="text-muted-foreground"
+                                            // disabled={discountsStatus !== "success"}
+                                        >
+                                            <SelectValue placeholder="Sélectionner son parent" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem className="capitalize" value="Tsisy lty a">
+                                                Tsisy lty a
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid gap-2 pb-2">
+                                    <Button type="submit" size={'lg'} className="w-full font-bold">
+                                        {(createMutation.isPending || updateMutation.isPending) && (
+                                            <LoaderPinwheel className="animate-spin mr-2 size-4" />
                                         )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="subCategoryId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Sous-catégorie (optionel)</FormLabel>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    defaultValue={field.value}
-                                                    disabled={categoriesStatus !== 'success' && !form.getValues('categoryId')}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger className="text-muted-foreground">
-                                                            <SelectValue placeholder="Sélectionner une sous-catégorie" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        {categoriesStatus === 'success' &&
-                                                            categoriesData
-                                                                .filter((category) => category.id === form.getValues('categoryId'))[0]
-                                                                ?.subcategories.map((subcategory) => (
-                                                                    <SelectItem className="capitalize" key={subcategory.id} value={subcategory.id}>
-                                                                        {subcategory.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                    </SelectContent>
-                                                </Select>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="discountId"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Promotion (optionel)</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger className="text-muted-foreground">
-                                                            <SelectValue placeholder="Sélectionner une promotion" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="m@example.com">m@example.com</SelectItem>
-                                                        <SelectItem value="m@google.com">m@google.com</SelectItem>
-                                                        <SelectItem value="m@support.com">m@support.com</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div className="grid gap-2 pb-2">
-                                        <Button type="submit" size={'lg'} className="w-full font-bold">
-                                            {createMutation.isPending && <LoaderPinwheel className="animate-spin mr-2 size-4" />}
-                                            Enregristrer
+                                        Enregristrer
+                                    </Button>
+                                    <DrawerClose asChild>
+                                        <Button variant="outline" size={'lg'} className="w-full font-bold">
+                                            Annuler
                                         </Button>
-                                        <DrawerClose asChild>
-                                            <Button variant="outline" size={'lg'} className="w-full font-bold">
-                                                Annuler
-                                            </Button>
-                                        </DrawerClose>
-                                    </div>
+                                    </DrawerClose>
                                 </div>
-                            </form>
-                        </Form>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </DrawerContent>

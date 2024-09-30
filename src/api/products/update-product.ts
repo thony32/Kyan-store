@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProductsQueryOptions } from './get-products'
 import { supabase } from '@/libs/supabase-client'
 import type { CreateProductInput } from './create-product'
+import { toast } from 'sonner'
 
 function convertToSupabaseProduct(product: CreateProductInput): {
     name: string
@@ -80,6 +81,7 @@ export const useUpdateProduct = ({ mutationConfig }: UseUpdateProductOptions) =>
             queryClient.invalidateQueries({
                 queryKey: getProductsQueryOptions().queryKey
             })
+            toast.success('Product modifié avec succès')
             onSuccess?.(...args)
         },
         onError: (error) => {

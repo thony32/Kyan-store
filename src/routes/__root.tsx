@@ -9,7 +9,7 @@ const App = () => {
         <div>
             <Outlet />
             <ChatDropdown />
-            <Toaster richColors />
+            <Toaster richColors theme="light" />
         </div>
     )
 }

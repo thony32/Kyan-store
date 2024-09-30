@@ -5,6 +5,16 @@ import { useDeleteProduct } from '@/api/products/delete-product'
 import { useProducts } from '@/api/products/get-products'
 import ProductForm from '@/components/back-office/product/product-form'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,20 +31,37 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useItemStore } from '@/store/edit-item-store'
 import type { Product } from '@/types/api'
 import getDiscountAmount from '@/utils/get-discount-amount'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { usePagination } from 'react-use-pagination'
 
 const AdminProduct = () => {
     const { data, status, error } = useProducts({})
     const [search, setSearch] = useState('')
     const [filter, setFilter] = useState<boolean | null>(null)
-    const [productEdit, setProductEdit] = useState<Product | undefined>(undefined)
+    const setProductItem = useItemStore((state) => state.setItem)
+
+    const getFilteredProduct = useCallback(() => {
+        if (status !== 'success' && !data) return []
+
+        return data
+            .filter((product) =>
+                search
+                    ? product.name.toLowerCase().includes(search.toLowerCase()) ||
+                      product.description.toLowerCase().includes(search.toLowerCase()) ||
+                      product.brand.toLowerCase().includes(search.toLowerCase())
+                    : true
+            )
+            .filter((product) => (filter === null ? true : product.is_available === filter))
+    }, [data, search, filter])
+
     const { currentPage, totalPages, setNextPage, setPreviousPage, nextEnabled, previousEnabled, startIndex, endIndex } = usePagination({
-        totalItems: status !== 'success' && !data ? 0 : data.length + 1,
+        totalItems: getFilteredProduct().length ? getFilteredProduct().length + 1 : 0,
         initialPageSize: 10
     })
+    const [itemToDelete, setItemToDelete] = useState<Product | null>(null)
     const deleteMutation = useDeleteProduct({})
 
     return (
@@ -74,7 +101,7 @@ const AdminProduct = () => {
                     <File className="h-3.5 w-3.5" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Exporter</span>
                 </Button>
-                <ProductForm productEdit={productEdit} setProductEdit={setProductEdit} />
+                <ProductForm />
             </div>
             <Card>
                 <CardHeader>
@@ -110,15 +137,7 @@ const AdminProduct = () => {
                                     </>
                                 ) : (
                                     <>
-                                        {data
-                                            .filter((product) =>
-                                                search
-                                                    ? product.name.toLowerCase().includes(search.toLowerCase()) ||
-                                                      product.description.toLowerCase().includes(search.toLowerCase()) ||
-                                                      product.brand.toLowerCase().includes(search.toLowerCase())
-                                                    : true
-                                            )
-                                            .filter((product) => (filter === null ? true : product.is_available === filter))
+                                        {getFilteredProduct()
                                             .slice(startIndex, endIndex)
                                             .map((product) => (
                                                 <TableRow key={product.id}>
@@ -152,17 +171,10 @@ const AdminProduct = () => {
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end">
                                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                                <DropdownMenuItem onClick={() => setProductEdit(product)}>
+                                                                <DropdownMenuItem onClick={() => setProductItem(product)}>
                                                                     <Pencil className="size-4 mr-3" /> Modifier
                                                                 </DropdownMenuItem>
-                                                                <DropdownMenuItem
-                                                                    onClick={() =>
-                                                                        deleteMutation.mutate({
-                                                                            productId: product.id
-                                                                        })
-                                                                    }
-                                                                    disabled={deleteMutation.isPending}
-                                                                >
+                                                                <DropdownMenuItem onClick={() => setItemToDelete(product)}>
                                                                     {deleteMutation.isPending ? (
                                                                         <LoaderPinwheel className="animate-spin size-4 mr-3" />
                                                                     ) : (
@@ -215,6 +227,34 @@ const AdminProduct = () => {
                     )}
                 </CardContent>
             </Card>
+            <AlertDialog
+                open={!!itemToDelete}
+                onOpenChange={(open) => {
+                    if (!open) setItemToDelete(null)
+                }}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous certain?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Cette action ne peut pas être annulée. Cela supprimera définitivement ce produit.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() =>
+                                deleteMutation.mutate({
+                                    productId: itemToDelete!.id
+                                })
+                            }
+                            disabled={deleteMutation.isPending}
+                        >
+                            Continuer
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

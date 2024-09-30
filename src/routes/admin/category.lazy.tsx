@@ -18,21 +18,47 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useItemStore } from '@/store/edit-item-store'
-import formatAdminCategories from '@/utils/format-admin-categories'
+import formatAdminCategories, { type FormatedCategory } from '@/utils/format-admin-categories'
 import { createLazyFileRoute } from '@tanstack/react-router'
 import { AlertCircleIcon, ChevronLeft, ChevronRight, File, ListFilter, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { usePagination } from 'react-use-pagination'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/components/ui/alert-dialog'
+import { useDeleteCategory } from '@/api/categories/delete-category'
 
 const AdminCategory = () => {
     const { data, status, error } = useCategories({})
     const [search, setSearch] = useState('')
     const [filter, setFilter] = useState<boolean | null>(null)
     const setCategoryItem = useItemStore((state) => state.setItem)
+
+    const getFilteredCategories = useCallback(() => {
+        if (status !== 'success' && !data) return []
+
+        return formatAdminCategories(data)
+            .filter((category) =>
+                search
+                    ? category.name.toLowerCase().includes(search.toLowerCase()) || category.parent_name?.toLowerCase().includes(search.toLowerCase())
+                    : true
+            )
+            .filter((category) => (filter === null ? true : category.is_main_category === filter))
+    }, [data, search, filter, status])
+
     const { currentPage, totalPages, setNextPage, setPreviousPage, nextEnabled, previousEnabled, startIndex, endIndex } = usePagination({
-        totalItems: status !== 'success' && !data ? 0 : formatAdminCategories(data).length + 1,
-        initialPageSize: 11
+        totalItems: getFilteredCategories().length ? getFilteredCategories().length + 1 : 0,
+        initialPageSize: 10
     })
+    const [itemToDelete, setItemToDelete] = useState<FormatedCategory | null>(null)
+    const deleteMutation = useDeleteCategory({})
 
     return (
         <div className="grid gap-4">
@@ -108,14 +134,7 @@ const AdminCategory = () => {
                                     </>
                                 ) : (
                                     <>
-                                        {formatAdminCategories(data)
-                                            .filter((category) =>
-                                                search
-                                                    ? category.name.toLowerCase().includes(search.toLowerCase()) ||
-                                                      category.parent_name?.toLowerCase().includes(search.toLowerCase())
-                                                    : true
-                                            )
-                                            .filter((category) => (filter === null ? true : category.is_main_category === filter))
+                                        {getFilteredCategories()
                                             .slice(startIndex, endIndex)
                                             .map((category) => (
                                                 <TableRow key={category.id}>
@@ -138,7 +157,7 @@ const AdminCategory = () => {
                                                                 <DropdownMenuItem onClick={() => setCategoryItem(category)}>
                                                                     <Pencil className="size-4 mr-3" /> Modifier
                                                                 </DropdownMenuItem>
-                                                                <DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => setItemToDelete(category)}>
                                                                     <Trash2 className="size-4 mr-3" /> Supprimer
                                                                 </DropdownMenuItem>
                                                             </DropdownMenuContent>
@@ -186,6 +205,36 @@ const AdminCategory = () => {
                     )}
                 </CardContent>
             </Card>
+            <AlertDialog
+                open={!!itemToDelete}
+                onOpenChange={(open) => {
+                    if (!open) setItemToDelete(null)
+                }}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous certain?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Cette action ne peut pas être annulée. Cela supprimera définitivement cette{' '}
+                            {itemToDelete?.is_main_category ? 'catégorie' : 'sous-catégorie'}.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() =>
+                                deleteMutation.mutate({
+                                    categoryId: itemToDelete!.id,
+                                    isMainCategory: itemToDelete!.is_main_category
+                                })
+                            }
+                            disabled={deleteMutation.isPending}
+                        >
+                            Continuer
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

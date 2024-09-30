@@ -2,7 +2,7 @@ import type { Theme } from '@/types/theme'
 import { create } from 'zustand'
 
 export const useTheme = create((set: any, get: any) => {
-    const storedTheme = (localStorage.getItem('vite-ui-theme') || 'dark') as Theme
+    const storedTheme = (localStorage.getItem('vite-ui-theme') || 'light') as Theme
 
     // Set initial theme and effects
     const initTheme = () => {

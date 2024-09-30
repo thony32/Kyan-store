@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { LoaderPinwheel, PlusCircle } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCreateCategory, type CreateCategoryInput } from '@/api/categories/create-category'
+import { defaultValues, useCreateCategory, type CreateCategoryInput } from '@/api/categories/create-category'
 import { getCategoriesQueryOptions, useCategories } from '@/api/categories/get-categories'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -20,11 +20,7 @@ export default function CategoryDialogForm() {
     const setCategoryItem = useItemStore((state) => state.setItem)
     const queryClient = useQueryClient()
 
-    const [categoryEdit, setCategoryEdit] = useState<CreateCategoryInput>({
-        name: '',
-        isMainCategory: true,
-        categoryId: undefined
-    })
+    const [categoryEdit, setCategoryEdit] = useState<CreateCategoryInput>(defaultValues)
 
     const { data: categoriesData, status: categoriesStatus } = useCategories({})
     const createMutation = useCreateCategory({})
@@ -66,7 +62,10 @@ export default function CategoryDialogForm() {
             open={open}
             onOpenChange={(o) => {
                 setOpen(o)
-                if (!o) setCategoryItem(null)
+                if (!o) {
+                    setCategoryItem(null)
+                    setCategoryEdit(defaultValues)
+                }
             }}
         >
             <DialogTrigger asChild>
@@ -142,15 +141,15 @@ export default function CategoryDialogForm() {
                             </Select>
                         </div>
                         <div className="flex gap-2 pb-2">
-                            <Button type="submit" size={'lg'} className="w-full font-bold">
-                                {createMutation.isPending && <LoaderPinwheel className="animate-spin mr-2 size-4" />}
-                                Enregristrer
-                            </Button>
                             <DialogClose asChild>
                                 <Button variant="outline" size={'lg'} className="w-full font-bold">
                                     Annuler
                                 </Button>
                             </DialogClose>
+                            <Button type="submit" size={'lg'} className="w-full font-bold">
+                                {(createMutation.isPending || updateMutation.isPending) && <LoaderPinwheel className="animate-spin mr-2 size-4" />}
+                                Enregristrer
+                            </Button>
                         </div>
                     </form>
                 </div>

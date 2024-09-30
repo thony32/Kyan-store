@@ -3,6 +3,7 @@ import type { MutationConfig } from '@/libs/react-query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { getProductsQueryOptions } from './get-products'
 import { supabase } from '@/libs/supabase-client'
+import { toast } from 'sonner'
 
 export const deleteProduct = async ({ productId }: { productId: string }) => {
     // return api.delete(`admin/product/${productId}`);
@@ -23,6 +24,7 @@ export const useDeleteProduct = ({ mutationConfig }: UseDeleteProductOptions) =>
             queryClient.invalidateQueries({
                 queryKey: getProductsQueryOptions().queryKey
             })
+            toast.success('Produit supprimé avec succès')
             onSuccess?.(...args)
         },
         ...restConfig,
