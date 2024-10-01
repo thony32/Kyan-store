@@ -57,3 +57,19 @@ export type Product = Entity<{
     ratings: Rating[]
     is_available: boolean
 }>
+
+export type OrderItem = Entity<{
+    order_id: string
+    product_id: string
+    product_name: string
+    price: number
+    quantity: number
+}>
+
+export type Order = Entity<{
+    status: string
+    total_amount: number
+    order_date: string
+    user_id: string
+    order_items: OrderItem[]
+}>

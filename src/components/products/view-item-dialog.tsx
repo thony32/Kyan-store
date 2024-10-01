@@ -1,24 +1,26 @@
+import { useRatings } from '@/api/products/get-ratings'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog'
-import { useCartStore } from '@/store/cart-store'
 import { useViewItemStore } from '@/store/view-item-store'
 import { cn } from '@/utils/cn'
 import getDiscountAmount from '@/utils/get-discount-amount'
 import { Link, useMatch } from '@tanstack/react-router'
-import { Loader2, ShoppingBag } from 'lucide-react'
+import { ShoppingBag } from 'lucide-react'
 import Star from '../misc/star'
 import RatingForm from './rating-form'
 import RatingsCount from './ratings-count'
-import { useRatings } from '@/api/products/get-ratings'
+import { useAuthStore } from '@/store/auth-store'
+import AddToCartButton from './add-to-cart-button'
+import { useOrderStore } from '@/store/order-store'
 
 export default function ViewItemDialog() {
+    const user = useAuthStore((state) => state.user)
     const openItem = useViewItemStore((state) => state.open)
     const itemToView = useViewItemStore((state) => state.item)
+    const order = useOrderStore((state) => state.order)
     const setOpenItem = useViewItemStore((state) => state.setOpen)
-    const cartItems = useCartStore((state) => state.items)
-    const addToCart = useCartStore((state) => state.addItem)
     const match = useMatch({ from: '/_public/cart', shouldThrow: false })
 
     return (
@@ -89,10 +91,8 @@ export default function ViewItemDialog() {
                             Fermer
                         </Button>
                     </DialogClose>
-                    {!cartItems.find((item) => item.id === itemToView?.id) ? (
-                        <Button type="button" onClick={() => addToCart(itemToView!)}>
-                            Ajouter au panier <ShoppingBag className="size-4 ml-2" />
-                        </Button>
+                    {user?.role === 'CUSTOMER' && !order?.order_items.find((item) => item.product_id === itemToView?.id) ? (
+                        <AddToCartButton product={itemToView!} />
                     ) : match ? null : (
                         <Link to="/cart" className={cn(buttonVariants({ variant: 'outline' }))} onClick={() => setOpenItem(false)}>
                             Voir le panier <ShoppingBag className="size-4 ml-2" />

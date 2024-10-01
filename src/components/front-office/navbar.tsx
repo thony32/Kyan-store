@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
-import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
 import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
@@ -25,14 +24,22 @@ import { getProductsQueryOptions } from '@/api/products/get-products'
 import getDiscountAmount from '@/utils/get-discount-amount'
 import { useViewItemStore } from '@/store/view-item-store'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useOrder } from '@/api/order/get-order'
+import { useOrderStore } from '@/store/order-store'
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user)
-    const items = useCartStore((state) => state.items)
     const shouldAuth = useAuthDialogStore((state) => state.shouldOpen)
     const setShouldAuth = useAuthDialogStore((state) => state.setShouldOpen)
+    const setOrder = useOrderStore((state) => state.setOrder)
     const logoutMutation = useLogoutMutation()
-    // const debounced = useDebounceCallback(setSearch, 500); //Appel de fonction
+    const { data: items, status } = useOrder({ userId: user?.id })
+
+    useEffect(() => {
+        if (status === 'success' && items?.length > 0) {
+            setOrder(items[0])
+        }
+    }, [status, items])
 
     return (
         <header className="grid grid-cols-3 px-[5%] items-center shadow-md bg-background z-20 sticky top-0 h-fit">
@@ -126,9 +133,9 @@ export default function Navbar() {
                             </clipPath>
                         </defs>
                     </svg>
-                    {items.length > 0 && (
+                    {items && items.length > 0 && items[0].order_items.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 shadow-none rounded-full text-base scale-75" variant="destructive">
-                            {items.reduce((sum, item) => sum + item.orderQuantity, 0)}
+                            {items[0].order_items.reduce((sum, item) => sum + item.quantity, 0)}
                         </Badge>
                     )}
                 </Link>
