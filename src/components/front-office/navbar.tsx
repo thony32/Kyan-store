@@ -17,8 +17,14 @@ import { useCartStore } from '@/store/cart-store'
 import { cn } from '@/utils/cn'
 import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import AuthDialog from './auth-dialog'
+import { useQueryClient } from '@tanstack/react-query'
+import type { Product } from '@/types/api'
+import { getProductsQueryOptions } from '@/api/products/get-products'
+import getDiscountAmount from '@/utils/get-discount-amount'
+import { useViewItemStore } from '@/store/view-item-store'
+import { useDebounce } from '@/hooks/use-debounce'
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user)
@@ -26,8 +32,6 @@ export default function Navbar() {
     const shouldAuth = useAuthDialogStore((state) => state.shouldOpen)
     const setShouldAuth = useAuthDialogStore((state) => state.setShouldOpen)
     const logoutMutation = useLogoutMutation()
-
-    const [search, setSearch] = useState('')
     // const debounced = useDebounceCallback(setSearch, 500); //Appel de fonction
 
     return (
@@ -100,31 +104,7 @@ export default function Navbar() {
                 >
                     <DialogTitle className="sr-only" />
                     <DialogDescription className="sr-only" />
-                    <label
-                        htmlFor="search"
-                        className={cn(
-                            'border-2 flex items-center h-fit gap-3 pl-4 pr-2 rounded-xl w-full',
-                            'has-[input:focus]:border-primary',
-                            search && 'border-primary'
-                        )}
-                    >
-                        <SearchIcon className={cn('flex-shrink-0', 'has-[+_input:focus]:text-primary', search && 'text-primary')} />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Rechercher un produit..."
-                            className="bg-transparent py-4 w-full h-full text-secondary-foreground focus:outline-none"
-                            // biome-ignore lint/a11y/noAutofocus: <explanation>
-                            autoFocus
-                        />
-                        {search && (
-                            <Button variant="ghost" size="icon" className="rounded-full flex-shrink-0" onClick={() => setSearch('')}>
-                                <X className="size-4" />
-                            </Button>
-                        )}
-                    </label>
-                    <SearchIllustration className="opacity-75" />
+                    <SearchDialogContent />
                 </DialogContent>
             </Dialog>
 
@@ -202,5 +182,106 @@ export default function Navbar() {
                 </Dialog>
             </div>
         </header>
+    )
+}
+
+const SearchDialogContent = () => {
+    const [search, setSearch] = useState('')
+    const [data, setData] = useState<Product[]>([])
+    const queryClient = useQueryClient()
+    const setOpenProduct = useViewItemStore((state) => state.setOpen)
+
+    // FIX: This shit ain't work as expected but... nevermind
+    const debouncedSearch = useDebounce(search, 1000)
+
+    const getSearchedProducts = useCallback(
+        (products: Product[]) => {
+            return products.filter(
+                (product) =>
+                    product.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    product.description.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    product.category_name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    product.brand.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                    product.model.toLowerCase().includes(debouncedSearch.toLowerCase())
+            )
+        },
+        [debouncedSearch]
+    )
+
+    useEffect(() => {
+        if (debouncedSearch) {
+            const resultData = queryClient.getQueryData<Product[]>(getProductsQueryOptions().queryKey)
+            if (resultData) {
+                setData(getSearchedProducts(resultData))
+            } else setData([])
+        }
+    }, [debouncedSearch, queryClient, getSearchedProducts])
+
+    return (
+        <div className="flex flex-col gap-2">
+            <label
+                htmlFor="search"
+                className={cn(
+                    'border-2 flex items-center h-fit gap-3 pl-4 pr-2 rounded-xl w-full',
+                    'has-[input:focus]:border-primary',
+                    search && 'border-primary'
+                )}
+            >
+                <SearchIcon className={cn('flex-shrink-0', 'has-[+_input:focus]:text-primary', search && 'text-primary')} />
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Rechercher un produit..."
+                    className="bg-transparent py-4 w-full h-full text-secondary-foreground focus:outline-none"
+                    data-autofocus
+                />
+                {search && (
+                    <Button variant="ghost" size="icon" className="rounded-full flex-shrink-0" onClick={() => setSearch('')}>
+                        <X className="size-4" />
+                    </Button>
+                )}
+            </label>
+            {data.length && search ? (
+                <>
+                    <p className="font-medium text-sm italic">
+                        {data.length} Résultats de recherche pour "{search}"
+                    </p>
+                    <div className="flex flex-col gap-2 max-h-[75dvh] overflow-auto">
+                        {data.map((product) => (
+                            <button
+                                key={product.id}
+                                type="button"
+                                onClick={() => setOpenProduct(product)}
+                                className="flex items-center gap-4 border rounded-md p-2"
+                            >
+                                {product.image_url ? (
+                                    <img src={product.image_url} alt={product.name} className="size-14 object-cover rounded-lg" />
+                                ) : (
+                                    <div className="rounded size-14 aspect-square bg-gray-100" />
+                                )}
+                                <div className="space-y-1 text-left">
+                                    <p className="text-sm font-semibold line-clamp-2">{product.name}</p>
+                                    <p className="text-xs line-clamp-1 text-secondary-foreground">{product.description}</p>
+                                </div>
+                                <div className="flex flex-col items-end gap-2">
+                                    {product.discount_percentage && (
+                                        <Badge className="bg-destructive h-fit px-1 rounded-sm shadow-none pointer-events-none">
+                                            -{product.discount_percentage * 10}%
+                                        </Badge>
+                                    )}
+                                    <span className="font-semibold">
+                                        <span className="text-green-400">$</span>
+                                        {product.price - getDiscountAmount(product)}
+                                    </span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <SearchIllustration className="opacity-75 h-56" />
+            )}
+        </div>
     )
 }

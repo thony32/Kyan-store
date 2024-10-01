@@ -12,15 +12,13 @@ const ProductCard = ({ product }: { product: Product }) => {
     const setOpenProduct = useViewItemStore((state) => state.setOpen)
 
     return (
-        <div className="border rounded-lg px-4 py-2">
+        <button type="button" onClick={() => setOpenProduct(product)} className="border rounded-lg px-4 py-2">
             {product.image_url ? (
                 <img src={product.image_url} alt={product.name} className="w-full h-40 object-contain mb-2" />
             ) : (
                 <div className="w-full rounded h-40 aspect-square bg-gray-100 mb-2" />
             )}
-            <button type="button" onClick={() => setOpenProduct(product)} className="text-sm text-left font-bold truncate w-full">
-                {product.name}
-            </button>
+            <p className="text-sm text-left font-bold truncate w-full">{product.name}</p>
             <div className="flex items-center space-x-2 mb-2">
                 <span className="text-sm line-through text-gray-500">{product.price}</span>
                 <span className="font-semibold text-lg">
@@ -34,7 +32,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 )}
             </div>
             <RatingsCount ratings={product.ratings} />
-        </div>
+        </button>
     )
 }
 
