@@ -9,16 +9,20 @@ interface Slide {
 const Carousel: React.FC = () => {
     const slides: Slide[] = [
         {
-            image: 'https://media.istockphoto.com/id/1295274245/photo/random-multicolored-spheres-computer-generated-abstract-form-of-large-and-small-balls-3d.jpg?s=612x612&w=0&k=20&c=q7NOl28YxIIOqKu6em50VlKrg6ISFyVww_nLOCr5W_A=',
+            image: 'https://img.freepik.com/free-photo/big-sale-discounts-products_23-2150336669.jpg',
             altText: 'Mega Sale'
         },
         {
-            image: 'https://t3.ftcdn.net/jpg/09/37/69/86/360_F_937698648_AWqXvwVo1siiUQplTtjNjQCRIdH63Ifl.jpg',
-            altText: 'New Arrivals'
+            image: 'https://img.freepik.com/free-psd/black-friday-super-sale-web-banner-template_120329-2158.jpg',
+            altText: 'Black Friday'
         },
         {
-            image: 'https://t3.ftcdn.net/jpg/09/37/69/86/360_F_937698654_KFtpOXKXTFjOQajWM03TLvxTQJhtbNmA.jpg',
-            altText: 'Summer Sale'
+            image: 'https://img.freepik.com/premium-psd/smart-phone-sale-promotion-black-friday-sale-web-banner-template_179771-192.jpg',
+            altText: 'Black Friday Sale'
+        },
+        {
+            image: 'https://img.freepik.com/premium-psd/gaming-laptop-sale-promotion-banner_252779-743.jpg',
+            altText: 'Gaming Laptop Sale'
         }
     ]
 
@@ -53,7 +57,7 @@ const Carousel: React.FC = () => {
             >
                 {slides.map((slide) => (
                     <div key={slide.image} className="min-w-full transition-opacity duration-500 ease-in-out">
-                        <img src={slide.image} alt={slide.altText} className="w-full rounded-2xl" />
+                        <img src={slide.image} alt={slide.altText} className="w-full object-cover aspect-video rounded-2xl" />
                     </div>
                 ))}
             </div>
