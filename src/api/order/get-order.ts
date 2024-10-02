@@ -44,7 +44,7 @@ export const getSupabaseOrder = async ({
 
 export const getOrderQueryOptions = (userId?: string) => ({
     queryKey: ['order', userId],
-    queryFn: () => getOrder({ userId })
+    queryFn: () => getSupabaseOrder({ userId })
 })
 
 type UseOrderOptions = {
