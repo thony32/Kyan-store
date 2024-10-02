@@ -31,6 +31,7 @@ export default function Navbar() {
     const user = useAuthStore((state) => state.user)
     const shouldAuth = useAuthDialogStore((state) => state.shouldOpen)
     const setShouldAuth = useAuthDialogStore((state) => state.setShouldOpen)
+    const order = useOrderStore((state) => state.order)
     const setOrder = useOrderStore((state) => state.setOrder)
     const logoutMutation = useLogoutMutation()
     const { data: items, status } = useOrder({ userId: user?.id })
@@ -133,9 +134,9 @@ export default function Navbar() {
                             </clipPath>
                         </defs>
                     </svg>
-                    {items && items.length > 0 && items[0].order_items.length > 0 && (
+                    {order && order.order_items.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 shadow-none rounded-full text-base scale-75" variant="destructive">
-                            {items[0].order_items.reduce((sum, item) => sum + item.quantity, 0)}
+                            {order.order_items.reduce((sum, item) => sum + item.quantity, 0)}
                         </Badge>
                     )}
                 </Link>

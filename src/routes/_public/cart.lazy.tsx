@@ -1,4 +1,6 @@
+import { useOrder } from '@/api/order/get-order'
 import { useUpdateOrder } from '@/api/order/update-order'
+import { useUpdateOrdertem } from '@/api/order/update-orderitem'
 import { getProducts, getProductsQueryOptions } from '@/api/products/get-products'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -22,12 +24,14 @@ function CartPage() {
     const user = useAuthStore((state) => state.user)
     const navigate = useNavigate({ from: '/cart' })
     const setShouldOpen = useAuthDialogStore((state) => state.setShouldOpen)
-    const order = useOrderStore((state) => state.order)
 
     if (!user) {
         setShouldOpen(true)
         navigate({ to: '/' })
+        return null
     }
+
+    const { data: order } = useOrder({ userId: user.id })
 
     return (
         <main className="max-w-screen-lg mx-auto grid gap-y-6">
@@ -35,7 +39,7 @@ function CartPage() {
                 <h1 className="text-4xl font-bold">
                     Mon panier{' '}
                     <small className="font-medium text-lg">
-                        ({!order?.order_items.length ? 0 : order.order_items.reduce((sum, item) => sum + item.quantity, 0)} articles)
+                        ({!order?.[0]?.order_items.length ? 0 : order[0].order_items.reduce((sum, item) => sum + item.quantity, 0)} articles)
                     </small>
                 </h1>
                 <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}>
@@ -51,10 +55,9 @@ function OrderList() {
     const order = useOrderStore((state) => state.order)
     const [products, setProducts] = useState<Product[] | undefined>(undefined)
     const queryClient = useQueryClient()
+    const updateItemMutation = useUpdateOrdertem({})
     const deleteItemMutation = useUpdateOrder({})
 
-    const incrementItem = useCartStore((state) => state.increment)
-    const decrementItem = useCartStore((state) => state.decrement)
     const getTotal = useCartStore((state) => state.getTotal)
     const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
     const getSubtotal = useCartStore((state) => state.getSubtotal)
@@ -98,7 +101,16 @@ function OrderList() {
                                     <div className="flex border-2 w-fit rounded">
                                         <button
                                             type="button"
-                                            onClick={() => decrementItem(product)}
+                                            onClick={() =>
+                                                updateItemMutation.mutate({
+                                                    values: {
+                                                        id: item.id,
+                                                        orderId: item.order_id,
+                                                        productId: item.product_id,
+                                                        quantity: item.quantity - 1
+                                                    }
+                                                })
+                                            }
                                             disabled={item.quantity === 1}
                                             className="grid place-items-center px-2"
                                         >
@@ -107,7 +119,16 @@ function OrderList() {
                                         <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.quantity}</span>
                                         <button
                                             type="button"
-                                            onClick={() => incrementItem(product)}
+                                            onClick={() =>
+                                                updateItemMutation.mutate({
+                                                    values: {
+                                                        id: item.id,
+                                                        orderId: item.order_id,
+                                                        productId: item.product_id,
+                                                        quantity: item.quantity + 1
+                                                    }
+                                                })
+                                            }
                                             disabled={product.quantity === item.quantity}
                                             className="grid place-items-center px-2"
                                         >
