@@ -34,10 +34,10 @@ export default function ViewItemDialog() {
                 <DialogDescription className="sr-only" />
                 {itemToView ? (
                     <div className="flex gap-6">
-                        <div className="w-full aspect-square grid bg-gray-100 rounded-3xl overflow-hidden">
+                        <div className="w-full aspect-square grid bg-gray-100 rounded-2xl overflow-hidden">
                             {itemToView.image_url && <img src={itemToView.image_url} alt={itemToView.name} className="w-full h-full object-cover" />}
                         </div>
-                        <div className="flex flex-col gap-5 justify-between p-5 w-full" style={{ opacity: 1, transform: 'none' }}>
+                        <div className="flex flex-col gap-5 justify-between p-5 pb-2 w-full" style={{ opacity: 1, transform: 'none' }}>
                             <div className="grid gap-5">
                                 <h2 className="text-xl font-semibold line-clamp-3">{itemToView.name}</h2>
                                 <div className="flex justify-between items-center">
@@ -82,23 +82,23 @@ export default function ViewItemDialog() {
                                 <hr />
                                 <RatingList productId={itemToView.id} />
                             </div>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button type="button" variant="secondary">
+                                        Fermer
+                                    </Button>
+                                </DialogClose>
+                                {user?.role === 'CUSTOMER' && !order?.order_items.find((item) => item.product_id === itemToView.id) ? (
+                                    <AddToCartButton product={itemToView} />
+                                ) : match ? null : (
+                                    <Link to="/cart" className={cn(buttonVariants({ variant: 'outline' }))} onClick={() => setOpenItem(false)}>
+                                        Voir le panier <ShoppingBag className="size-4 ml-2" />
+                                    </Link>
+                                )}
+                            </DialogFooter>
                         </div>
                     </div>
                 ) : null}
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button type="button" variant="secondary">
-                            Fermer
-                        </Button>
-                    </DialogClose>
-                    {user?.role === 'CUSTOMER' && !order?.order_items.find((item) => item.product_id === itemToView?.id) ? (
-                        <AddToCartButton product={itemToView!} />
-                    ) : match ? null : (
-                        <Link to="/cart" className={cn(buttonVariants({ variant: 'outline' }))} onClick={() => setOpenItem(false)}>
-                            Voir le panier <ShoppingBag className="size-4 ml-2" />
-                        </Link>
-                    )}
-                </DialogFooter>
             </DialogContent>
         </Dialog>
     )
