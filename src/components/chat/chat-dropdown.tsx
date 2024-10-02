@@ -4,12 +4,35 @@ import IALogo from '../misc/ia-logo'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
-import { BotResponse, BotResponseProduct } from './bot-response'
+import { BotLoader, BotResponse, BotResponseProduct } from './bot-response'
 import UserMessage from './user-message'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
+import { useChat } from '@/api/chatbot/chat'
+import { useChatStore } from '@/store/chat-store'
 
 const ChatDropdown = () => {
     const match = useMatch({ from: '/admin', shouldThrow: false })
     if (match) return null
+    const [messageText, setMessageText] = useState('')
+    const chats = useChatStore((state) => state.chat)
+    const setChats = useChatStore((state) => state.setChat)
+    const chatMutation = useChat({})
+    const scrollRef = useRef<HTMLDivElement | null>(null)
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        setChats({ text: messageText, isBot: false })
+        setMessageText('')
+        chatMutation.mutate({ message: messageText })
+    }
+
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+        }
+    }, [chats])
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -38,30 +61,40 @@ const ChatDropdown = () => {
                     </div>
 
                     {/* Chat Body */}
-                    <div className="p-4 space-y-4">
-                        {/* User Message */}
-                        <UserMessage />
-
-                        {/* Bot Response */}
-                        <BotResponse />
+                    <div ref={scrollRef} className="p-4 space-y-4 min-h-[50dvh] max-h-[50dvh] overflow-auto text-sm">
+                        {!chats.length && (
+                            <div className="flex flex-col justify-center items-center min-h-72  gap-2">
+                                <EmptyMessage />
+                                <p className="text-gray-400 text-sm">Discutez avec notre assistant</p>
+                            </div>
+                        )}
+                        {chats.map((chat, idx) =>
+                            chat.isBot ? (
+                                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                                <BotResponse key={idx} message={chat.text} />
+                            ) : (
+                                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                                <UserMessage key={idx} message={chat.text} />
+                            )
+                        )}
 
                         {/* Product List */}
-                        <BotResponseProduct />
+                        {/* <BotResponseProduct /> */}
 
-                        {/* User Message */}
-                        <div className="flex justify-end">
-                            <div className="bubble-user relative bg-purple-600 text-white rounded-lg px-3 py-2 max-w-xs">Merci !</div>
-                        </div>
+                        {/* Loader */}
+                        {chatMutation.isPending && <BotLoader />}
                     </div>
 
                     {/* Chat Input */}
-                    <div className="p-3 border-t flex items-center">
+                    <form onSubmit={handleSubmit} className="p-3 border-t flex items-center">
                         <Input
                             type="text"
                             placeholder="Écrire ici votre message..."
+                            value={messageText}
+                            onChange={(e) => setMessageText(e.target.value)}
                             className="flex-1 border rounded-lg px-3 py-5 text-gray-700 focus:outline-none focus:ring focus:border-purple-300"
                         />
-                        <Button size="icon" type="button" variant="link" className="ml-2 rounded-full">
+                        <Button size="icon" type="submit" variant="link" className="ml-2 rounded-full" disabled={chatMutation.isPending}>
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <g id="SVGRepo_bgCarrier" strokeWidth={0} />
                                 <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
@@ -73,11 +106,40 @@ const ChatDropdown = () => {
                                 </g>
                             </svg>
                         </Button>
-                    </div>
+                    </form>
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 }
 
+const EmptyMessage = () => (
+    <svg
+        fill="#000000"
+        viewBox="0 0 24 24"
+        id="conversation"
+        data-name="Flat Color"
+        xmlns="http://www.w3.org/2000/svg"
+        className="icon flat-color size-24"
+    >
+        <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+        <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round" />
+        <g id="SVGRepo_iconCarrier">
+            <path
+                id="secondary"
+                d="M22,20.73l-1-3.6A6.82,6.82,0,0,0,22,13.5a7.3,7.3,0,0,0-3.62-6.14,1,1,0,0,0-1.12,0,1,1,0,0,0-.38,1A4.44,4.44,0,0,1,17,9.5c0,3-2.92,5.5-6.5,5.5a7.55,7.55,0,0,1-3-.64,1,1,0,0,0-.81,0L6,14.63a1,1,0,0,0-.53,1.27,8.44,8.44,0,0,0,8,5.1A9.6,9.6,0,0,0,17,20.36l3.66,1.56A1,1,0,0,0,21,22a1,1,0,0,0,.66-.25A1,1,0,0,0,22,20.73Z"
+                style={{
+                    fill: '#a680ff'
+                }}
+            />
+            <path
+                id="primary"
+                d="M18.82,8c-.8-3.46-4.3-6-8.32-6C5.81,2,2,5.36,2,9.5a6.82,6.82,0,0,0,1.06,3.63l-1,3.6a1,1,0,0,0,.3,1A1,1,0,0,0,3,18a1,1,0,0,0,.39-.08l3.66-1.56A9.6,9.6,0,0,0,10.5,17c4.69,0,8.5-3.36,8.5-7.5A6.27,6.27,0,0,0,18.82,8Z"
+                style={{
+                    fill: '#ffdbf5'
+                }}
+            />
+        </g>
+    </svg>
+)
 export default ChatDropdown

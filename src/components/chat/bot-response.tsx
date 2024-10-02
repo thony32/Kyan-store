@@ -1,9 +1,20 @@
 import joystick from '@/components/assets/img/joystick.png'
+import { Loader2 } from 'lucide-react'
 
-export const BotResponse = () => {
+export const BotResponse = ({ message }: { message: string }) => {
+    return (
+        <div className="flex justify-start pr-4">
+            <p className="bubble-bot relative bg-gray-200 text-foreground rounded-lg px-3 py-2 max-w-xs">{message}</p>
+        </div>
+    )
+}
+
+export const BotLoader = () => {
     return (
         <div className="flex justify-start">
-            <p className="bubble-bot relative bg-gray-200 text-foreground rounded-lg px-3 py-2 max-w-xs">Voici une liste de produits populaire</p>
+            <p className="bubble-bot relative bg-gray-200 text-foreground rounded-lg px-3 py-2 max-w-xs">
+                <Loader2 className="size-4 animate-spin" strokeWidth={4} />
+            </p>
         </div>
     )
 }

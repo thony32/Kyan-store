@@ -73,3 +73,8 @@ export type Order = Entity<{
     user_id: string
     order_items: OrderItem[]
 }>
+
+export type Chat = {
+    recipient_id: string
+    text: string
+}
