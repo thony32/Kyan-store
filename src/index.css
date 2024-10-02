@@ -3,105 +3,105 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 253 0% 100%;
-    --foreground: 253 58% 0%;
-    --muted: 253 2.9% 94.3%;
-    --muted-foreground: 253 13% 37%;
-    --popover: 253 44% 98%;
-    --popover-foreground: 253 58% 0%;
-    --card: 253 0% 100%;
-    --card-foreground: 0 0% 0%;
-    --border: 220 23.53% 93.96%;
-    --input: 220 20.42% 87.63%;
-    --primary: 257.01 84.19% 41.01%;
-    --primary-foreground: 253 91% 98%;
-    --secondary: 253 0% 95.08%;
-    --secondary-foreground: 253 5% 29%;
-    --accent: 253 57.83% 94.53%;
-    --accent-foreground: 253 12% 22%;
-    --destructive: 339.2 90.36% 51.18%;
-    --destructive-foreground: 0 0% 100%;
-    --ring: 253 91% 58%;
-    --radius: 0.7rem;
-  }
+    :root {
+        --background: 253 0% 100%;
+        --foreground: 253 58% 0%;
+        --muted: 253 2.9% 94.3%;
+        --muted-foreground: 253 13% 37%;
+        --popover: 253 44% 98%;
+        --popover-foreground: 253 58% 0%;
+        --card: 253 0% 100%;
+        --card-foreground: 0 0% 0%;
+        --border: 220 23.53% 93.96%;
+        --input: 220 20.42% 87.63%;
+        --primary: 257.01 84.19% 41.01%;
+        --primary-foreground: 253 91% 98%;
+        --secondary: 253 0% 95.08%;
+        --secondary-foreground: 253 5% 29%;
+        --accent: 253 57.83% 94.53%;
+        --accent-foreground: 253 12% 22%;
+        --destructive: 339.2 90.36% 51.18%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 253 91% 58%;
+        --radius: 0.7rem;
+    }
 
-  .dark {
-    --background: 253 43% 3%;
-    --foreground: 253 31% 98%;
-    --muted: 253 7% 13%;
-    --muted-foreground: 253 13% 63%;
-    --popover: 253 43% 3%;
-    --popover-foreground: 253 31% 98%;
-    --card: 253 43% 4%;
-    --card-foreground: 253 31% 99%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --primary: 253 91% 58%;
-    --primary-foreground: 253 91% 98%;
-    --secondary: 253 7% 9%;
-    --secondary-foreground: 253 7% 69%;
-    --accent: 253 13% 14%;
-    --accent-foreground: 253 13% 74%;
-    --destructive: 339.2 90.36% 51.18%;
-    --destructive-foreground: 0 0% 100%;
-    --ring: 253 91% 58%;
-  }
+    .dark {
+        --background: 253 43% 3%;
+        --foreground: 253 31% 98%;
+        --muted: 253 7% 13%;
+        --muted-foreground: 253 13% 63%;
+        --popover: 253 43% 3%;
+        --popover-foreground: 253 31% 98%;
+        --card: 253 43% 4%;
+        --card-foreground: 253 31% 99%;
+        --border: 215 27.9% 16.9%;
+        --input: 215 27.9% 16.9%;
+        --primary: 253 91% 58%;
+        --primary-foreground: 253 91% 98%;
+        --secondary: 253 7% 9%;
+        --secondary-foreground: 253 7% 69%;
+        --accent: 253 13% 14%;
+        --accent-foreground: 253 13% 74%;
+        --destructive: 339.2 90.36% 51.18%;
+        --destructive-foreground: 0 0% 100%;
+        --ring: 253 91% 58%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
 @layer components {
-  .rating-stars {
-    & > input {
-      display: none;
-      & + label {
-        @apply cursor-pointer text-muted-foreground/50 px-1;
-      }
-      &:checked ~ label,
-      & + label:hover ~ label,
-      & + label:hover {
-        @apply text-yellow-400;
-      }
+    .rating-stars {
+        & > input {
+            display: none;
+            & + label {
+                @apply cursor-pointer text-muted-foreground/50 px-1;
+            }
+            &:checked ~ label,
+            & + label:hover ~ label,
+            & + label:hover {
+                @apply text-yellow-400;
+            }
+        }
+
+        & > #rating-0 + label {
+            cursor: default;
+            text-indent: -9999px;
+            width: 0.5em;
+            margin-left: -0.5em;
+        }
+
+        &:hover > input + label {
+            @apply text-muted-foreground/50;
+        }
+        &:hover > input + label:hover ~ label,
+        &:hover > input + label:hover {
+            @apply text-yellow-400;
+        }
     }
 
-    & > #rating-0 + label {
-      cursor: default;
-      text-indent: -9999px;
-      width: 0.5em;
-      margin-left: -0.5em;
+    .bubble-user::before {
+        @apply content-[""] absolute z-0 h-5 w-5 rounded-bl-[15px] -right-2 bottom-0;
+        @apply bg-purple-600;
     }
-
-    &:hover > input + label {
-      @apply text-muted-foreground/50;
+    .bubble-user::after {
+        @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-bl-[10px] -right-2.5 bottom-0;
+        background: white;
     }
-    &:hover > input + label:hover ~ label,
-    &:hover > input + label:hover {
-      @apply text-yellow-400;
+    .bubble-bot::before {
+        @apply content-[""] absolute z-0 h-5 w-5 rounded-br-[15px] -left-2 bottom-0;
+        @apply bg-gray-200;
     }
-  }
-
-  .bubble-user::before {
-    @apply content-[""] absolute z-0 h-5 w-5 rounded-bl-[15px] -right-2 bottom-0;
-    @apply bg-purple-600;
-  }
-  .bubble-user::after {
-    @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-bl-[10px] -right-2.5 bottom-0;
-    background: white;
-  }
-  .bubble-bot::before {
-    @apply content-[""] absolute z-0 h-5 w-5 rounded-br-[15px] -left-2 bottom-0;
-    @apply bg-gray-200;
-  }
-  .bubble-bot::after {
-    @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-br-[10px] -left-2.5 bottom-0;
-    background: white;
-  }
+    .bubble-bot::after {
+        @apply content-[""] absolute z-[1] w-2.5 h-5 rounded-br-[10px] -left-2.5 bottom-0;
+        background: white;
+    }
 }

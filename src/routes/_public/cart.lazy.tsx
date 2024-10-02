@@ -1,7 +1,7 @@
+import { useDeleteOrderItem } from '@/api/order/delete-orderItem'
 import { useOrder } from '@/api/order/get-order'
-import { useUpdateOrder } from '@/api/order/update-order'
-import { useUpdateOrdertem } from '@/api/order/update-orderitem'
-import { getProducts, getProductsQueryOptions } from '@/api/products/get-products'
+import { useUpdateOrderItem } from '@/api/order/update-orderitem'
+import { getProductsQueryOptions } from '@/api/products/get-products'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
@@ -55,8 +55,8 @@ function OrderList() {
     const order = useOrderStore((state) => state.order)
     const [products, setProducts] = useState<Product[] | undefined>(undefined)
     const queryClient = useQueryClient()
-    const updateItemMutation = useUpdateOrdertem({})
-    const deleteItemMutation = useUpdateOrder({})
+    const updateItemMutation = useUpdateOrderItem({ userId: order?.user_id })
+    const deleteItemMutation = useDeleteOrderItem({ userId: order?.user_id })
 
     const getTotal = useCartStore((state) => state.getTotal)
     const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
@@ -138,22 +138,7 @@ function OrderList() {
                                     <Button
                                         variant="ghost"
                                         disabled={deleteItemMutation.isPending}
-                                        onClick={() =>
-                                            deleteItemMutation.mutate({
-                                                orderId: item.order_id,
-                                                values: {
-                                                    userId: order.user_id,
-                                                    orderItems: [
-                                                        {
-                                                            id: item.id,
-                                                            orderId: item.order_id,
-                                                            productId: item.product_id,
-                                                            quantity: item.quantity
-                                                        }
-                                                    ]
-                                                }
-                                            })
-                                        }
+                                        onClick={() => deleteItemMutation.mutate(item.id)}
                                     >
                                         <Trash2 className="size-4 mr-2" /> Supprimer
                                     </Button>

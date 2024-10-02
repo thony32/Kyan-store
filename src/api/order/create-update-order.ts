@@ -1,6 +1,6 @@
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import type { Order, Product } from '@/types/api'
+import type { Order } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/libs/supabase-client'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,19 +8,20 @@ import { toast } from 'sonner'
 import { getOrderQueryOptions } from './get-order'
 import { useOrderStore } from '@/store/order-store'
 
-type UpdateOrderInput = {
+// TODO: We don't need the orderId while using the api
+
+type CreateUpdateOrderInput = {
     userId: string
     orderItems: {
-        id?: string
-        orderId: string
+        orderId?: string
         productId: string
         quantity: number
     }[]
 }
 
-export function convertToSupabaseOrder(order: UpdateOrderInput): {
+export function convertToSupabaseOrder(order: CreateUpdateOrderInput): {
     id: string
-    order_id: string
+    order_id?: string
     product_id: string
     quantity: number
 } {
@@ -32,14 +33,13 @@ export function convertToSupabaseOrder(order: UpdateOrderInput): {
     }
 }
 
-export const updateOrder = async ({
-    values,
-    orderId
+export const createUpdateOrder = async ({
+    values
 }: {
-    values: UpdateOrderInput
-    orderId: string
+    values: CreateUpdateOrderInput
 }): Promise<Order[]> => {
-    // return api.put(`/admin/order/${orderId}`, data);
+    // const data = await api.post("/order/create-or-udate", data);
+    // return [data];
 
     // supabase
     const transformOrderData = (data: any): Order => ({
@@ -61,22 +61,31 @@ export const updateOrder = async ({
 
     let supabaseQuery: any
 
-    if (!values.orderItems[0].id) {
+    if (!values.orderItems[0].orderId) {
         supabaseQuery = supabase
-            .from('order_item')
-            .insert(convertToSupabaseOrder(values))
-            .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
+            .from('customer_order')
+            .insert({
+                id: uuidv4(),
+                order_date: new Date().toISOString(),
+                status: 'PENDING',
+                total_amount: 0,
+                user_id: values.userId
+            })
+            .select('*')
             .single()
     } else {
-        supabaseQuery = supabase
-            .from('order_item')
-            .delete()
-            .eq('id', values.orderItems[0].id)
-            .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
-            .single()
+        supabaseQuery = supabase.from('customer_order').select('*').eq('id', values.orderItems[0].orderId).single()
     }
 
-    const { data, error } = await supabaseQuery
+    const { data: fetchedData, error: fetchedError } = await supabaseQuery
+
+    if (fetchedError) throw new Error(fetchedError.message)
+
+    const { data, error } = await supabase
+        .from('order_item')
+        .insert({ ...convertToSupabaseOrder(values), order_id: fetchedData.id })
+        .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
+        .single()
 
     if (error) {
         throw new Error(error.message)
@@ -85,11 +94,12 @@ export const updateOrder = async ({
     return handleResponse(data)
 }
 
-type UseUpdateOrderOptions = {
-    mutationConfig?: MutationConfig<typeof updateOrder>
+type UseCreateUpdateOrderOptions = {
+    userId: string
+    mutationConfig?: MutationConfig<typeof createUpdateOrder>
 }
 
-export const useUpdateOrder = ({ mutationConfig }: UseUpdateOrderOptions) => {
+export const useCreateUpdateOrder = ({ userId, mutationConfig }: UseCreateUpdateOrderOptions) => {
     const queryClient = useQueryClient()
     const setOrder = useOrderStore.getState().setOrder
 
@@ -99,7 +109,7 @@ export const useUpdateOrder = ({ mutationConfig }: UseUpdateOrderOptions) => {
         onSuccess: (...args) => {
             const [data] = args
             queryClient.invalidateQueries({
-                queryKey: getOrderQueryOptions(data[0].user_id).queryKey
+                queryKey: getOrderQueryOptions(userId).queryKey
             })
             setOrder(data[0])
             toast.success('Commande mise à jour')
@@ -109,6 +119,6 @@ export const useUpdateOrder = ({ mutationConfig }: UseUpdateOrderOptions) => {
             console.error(error)
         },
         ...restConfig,
-        mutationFn: updateOrder
+        mutationFn: createUpdateOrder
     })
 }

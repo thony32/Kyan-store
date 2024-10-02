@@ -45,10 +45,11 @@ export const updateOrderItem = async ({
 }
 
 type UseUpdateOrderItemOptions = {
+    userId?: string
     mutationConfig?: MutationConfig<typeof updateOrderItem>
 }
 
-export const useUpdateOrdertem = ({ mutationConfig }: UseUpdateOrderItemOptions) => {
+export const useUpdateOrderItem = ({ userId, mutationConfig }: UseUpdateOrderItemOptions) => {
     const queryClient = useQueryClient()
     const oldOrder = useOrderStore.getState().order!
     const setOrder = useOrderStore.getState().setOrder
@@ -59,7 +60,7 @@ export const useUpdateOrdertem = ({ mutationConfig }: UseUpdateOrderItemOptions)
         onSuccess: (...args) => {
             const [data] = args
             queryClient.invalidateQueries({
-                queryKey: getOrderQueryOptions(data.order_id).queryKey
+                queryKey: getOrderQueryOptions(userId).queryKey
             })
             setOrder({
                 ...oldOrder,

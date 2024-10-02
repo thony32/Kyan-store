@@ -2,12 +2,7 @@ import type { Product } from '@/types/api'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { persist } from 'zustand/middleware'
-
-// Assuming this function is available
-function getDiscountAmount(product: Product): number {
-    if (product.discount_percentage) return Math.ceil((product.price * product.discount_percentage) / 10)
-    return 0
-}
+import getDiscountAmount from '@/utils/get-discount-amount'
 
 type Item = {
     orderQuantity: number

@@ -26,6 +26,7 @@ export const getSupabaseOrder = async ({
         .select('*, order_items:order_item(*, product:product_id(name, price))')
         .eq('status', 'PENDING')
         .eq('user_id', userId)
+        .order('id', { referencedTable: 'order_item', ascending: true })
 
     if (error) {
         throw new Error(error.message)
@@ -43,7 +44,7 @@ export const getSupabaseOrder = async ({
 
 export const getOrderQueryOptions = (userId?: string) => ({
     queryKey: ['order', userId],
-    queryFn: () => getSupabaseOrder({ userId })
+    queryFn: () => getOrder({ userId })
 })
 
 type UseOrderOptions = {
