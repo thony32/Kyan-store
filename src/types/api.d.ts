@@ -67,7 +67,7 @@ export type OrderItem = Entity<{
 }>
 
 export type Order = Entity<{
-    status: string
+    status: 'PENDING' | 'APPROVED'
     total_amount: number
     order_date: string
     user_id: string
@@ -77,4 +77,11 @@ export type Order = Entity<{
 export type Chat = {
     recipient_id: string
     text: string
+}
+
+export type Payment = {
+    payment_id: string
+    payment_method: string
+    is_confirmed: boolean
+    order: Order
 }

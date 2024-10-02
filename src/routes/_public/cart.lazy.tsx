@@ -1,16 +1,17 @@
 import { useDeleteOrderItem } from '@/api/order/delete-orderItem'
 import { useOrder } from '@/api/order/get-order'
 import { useUpdateOrderItem } from '@/api/order/update-orderitem'
+import { usePayOrder } from '@/api/payment/pay-order'
 import { getProductsQueryOptions } from '@/api/products/get-products'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
-import { useCartStore } from '@/store/cart-store'
 import { useOrderStore } from '@/store/order-store'
 import { useViewItemStore } from '@/store/view-item-store'
 import type { Product } from '@/types/api'
 import { cn } from '@/utils/cn'
+import { useOrderUtils } from '@/utils/order-utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
@@ -57,11 +58,16 @@ function OrderList() {
     const queryClient = useQueryClient()
     const updateItemMutation = useUpdateOrderItem({ userId: order?.user_id })
     const deleteItemMutation = useDeleteOrderItem({ userId: order?.user_id })
+    const payOrderMutation = usePayOrder({ userId: order?.user_id })
+    const navigate = useNavigate({ from: '/cart' })
 
-    const getTotal = useCartStore((state) => state.getTotal)
-    const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
-    const getSubtotal = useCartStore((state) => state.getSubtotal)
+    const { getTotal, getTotalDiscount, getSubtotal } = useOrderUtils(order?.order_items, products)
     const setOpenItem = useViewItemStore((state) => state.setOpen)
+
+    const handlePay = (orderId: string) => {
+        payOrderMutation.mutate(orderId)
+        navigate({ to: '/payment' })
+    }
 
     useEffect(() => {
         if (order) {
@@ -83,9 +89,9 @@ function OrderList() {
                     return (
                         <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
                             {product.image_url ? (
-                                <img src={product.image_url} alt={product.name} className="w-full max-w-52 aspect-square object-contain" />
+                                <img src={product.image_url} alt={product.name} className="w-full max-w-52 aspect-square object-contain shrink-0" />
                             ) : (
-                                <div className="w-52 h-52 bg-gray-50 rounded-md" />
+                                <div className="size-52 shrink-0 bg-gray-50 rounded-md" />
                             )}
 
                             <div className="flex flex-col gap-2">
@@ -163,23 +169,23 @@ function OrderList() {
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="text-sm">Prix:</li>
-                        <li className="text-sm">${getTotal()}</li>
+                        <li className="text-sm">${getTotal}</li>
                         <li className="text-sm">Livraison:</li>
                         <li className="text-sm text-green-500">Gratuit</li>
                         <li className="text-sm">Remise: </li>
                         <li className="text-sm text-destructive">
                             -$
-                            {getTotalDiscount()}
+                            {getTotalDiscount}
                         </li>
                     </ul>
                     <hr />
                     <ul className="grid grid-cols-2">
                         <li className="font-medium text-lg">Total:</li>
-                        <li className="font-medium text-lg">${getSubtotal()}</li>
+                        <li className="font-medium text-lg">${getSubtotal}</li>
                     </ul>
-                    <Link to="/payment">
-                        <Button className="w-full mt-2">Procéder au paiement</Button>
-                    </Link>
+                    <Button onClick={() => handlePay(order.id)} disabled={payOrderMutation.isPending} className="w-full mt-2">
+                        Procéder au paiement
+                    </Button>
                 </div>
             </aside>
         </section>

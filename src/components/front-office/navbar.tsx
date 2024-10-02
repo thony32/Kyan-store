@@ -217,13 +217,14 @@ const SearchDialogContent = () => {
     )
 
     useEffect(() => {
-        if (debouncedSearch) {
-            const resultData = queryClient.getQueryData<Product[]>(getProductsQueryOptions().queryKey)
-            if (resultData) {
-                setData(getSearchedProducts(resultData))
-            } else setData([])
+        const fetchProducts = async () => {
+            const resultData = await queryClient.ensureQueryData(getProductsQueryOptions())
+            setData(getSearchedProducts(resultData))
         }
-    }, [debouncedSearch, queryClient, getSearchedProducts])
+        if (debouncedSearch) {
+            fetchProducts()
+        }
+    }, [debouncedSearch, getSearchedProducts])
 
     return (
         <div className="flex flex-col gap-2">

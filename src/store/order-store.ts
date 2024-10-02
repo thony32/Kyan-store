@@ -3,14 +3,14 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 interface OrderState {
-    order: Order | undefined
-    setOrder: (order: Order | undefined) => void
+    order: Order | null
+    setOrder: (order: Order | null) => void
 }
 
 export const useOrderStore = create<OrderState>()(
     immer((set) => ({
-        order: undefined,
-        setOrder: (order: Order | undefined) => {
+        order: null,
+        setOrder: (order: Order | null) => {
             set((state) => {
                 state.order = order
             })

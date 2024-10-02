@@ -1,8 +1,21 @@
+import { useConfirmPayment } from '@/api/payment/confirm-payment'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import type { User } from '@/types/api'
+import { useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
 
-const PaymentForm = () => {
+const PaymentForm = ({ user, orderId }: { user: User; orderId: string }) => {
+    const navigate = useNavigate()
+    const confirmPaymentMutation = useConfirmPayment({ userId: user.id })
+
+    useEffect(() => {
+        if (confirmPaymentMutation.isSuccess) {
+            navigate({ to: '/cart' })
+        }
+    }, [confirmPaymentMutation.isSuccess])
+
     return (
         <div className="w-full lg:w-1/2 px-24 py-8">
             <h2 className="text-xl font-bold mb-6">Payer par carte</h2>
@@ -55,7 +68,12 @@ const PaymentForm = () => {
                 </div>
 
                 {/* NOTE: Payment Button */}
-                <Button type="button" className="w-full bg-blue-500 text-white py-2">
+                <Button
+                    onClick={() => confirmPaymentMutation.mutate(orderId)}
+                    disabled={confirmPaymentMutation.isPending}
+                    type="button"
+                    className="w-full bg-blue-500 text-white py-2"
+                >
                     Payer
                 </Button>
 
