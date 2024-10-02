@@ -6,6 +6,7 @@ import { supabase } from '@/libs/supabase-client'
 import { v4 as uuidv4 } from 'uuid'
 import { toast } from 'sonner'
 import { getOrderQueryOptions } from './get-order'
+import { useOrderStore } from '@/store/order-store'
 
 type UpdateOrderInput = {
     userId: string
@@ -37,26 +38,51 @@ export const updateOrder = async ({
 }: {
     values: UpdateOrderInput
     orderId: string
-}): Promise<Order> => {
+}): Promise<Order[]> => {
     // return api.put(`/admin/order/${orderId}`, data);
 
     // supabase
-    if (values.orderItems[0].id) {
-        const { data, error } = await supabase.from('order_item').insert(convertToSupabaseOrder(values)).select('*')
+    const transformOrderData = (data: any): Order => ({
+        ...data,
+        order_items: data.order_items.map((item: any) => ({
+            ...item,
+            product_name: item.product.name,
+            price: item.product.price
+        }))
+    })
 
-        if (error) {
-            throw new Error(error.message)
+    const handleResponse = (data: any): Order[] => {
+        if (data?.order) {
+            const order = transformOrderData(data.order)
+            return [order]
         }
-
-        return data[0]
+        return []
     }
 
-    const { data, error } = await supabase.from('order_item').delete().eq('id', orderId).select('*')
+    let supabaseQuery: any
+
+    if (!values.orderItems[0].id) {
+        supabaseQuery = supabase
+            .from('order_item')
+            .insert(convertToSupabaseOrder(values))
+            .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
+            .single()
+    } else {
+        supabaseQuery = supabase
+            .from('order_item')
+            .delete()
+            .eq('id', values.orderItems[0].id)
+            .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
+            .single()
+    }
+
+    const { data, error } = await supabaseQuery
+
     if (error) {
         throw new Error(error.message)
     }
 
-    return data[0]
+    return handleResponse(data)
 }
 
 type UseUpdateOrderOptions = {
@@ -65,6 +91,7 @@ type UseUpdateOrderOptions = {
 
 export const useUpdateOrder = ({ mutationConfig }: UseUpdateOrderOptions) => {
     const queryClient = useQueryClient()
+    const setOrder = useOrderStore.getState().setOrder
 
     const { onSuccess, ...restConfig } = mutationConfig || {}
 
@@ -72,8 +99,9 @@ export const useUpdateOrder = ({ mutationConfig }: UseUpdateOrderOptions) => {
         onSuccess: (...args) => {
             const [data] = args
             queryClient.invalidateQueries({
-                queryKey: getOrderQueryOptions(data.user_id).queryKey
+                queryKey: getOrderQueryOptions(data[0].user_id).queryKey
             })
+            setOrder(data[0])
             toast.success('Commande mise à jour')
             onSuccess?.(...args)
         },

@@ -1,3 +1,5 @@
+import { useUpdateOrder } from '@/api/order/update-order'
+import { getProducts, getProductsQueryOptions } from '@/api/products/get-products'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
@@ -5,9 +7,12 @@ import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { useOrderStore } from '@/store/order-store'
 import { useViewItemStore } from '@/store/view-item-store'
+import type { Product } from '@/types/api'
 import { cn } from '@/utils/cn'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Minus, Plus, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export const Route = createLazyFileRoute('/_public/cart')({
     component: CartPage
@@ -30,7 +35,7 @@ function CartPage() {
                 <h1 className="text-4xl font-bold">
                     Mon panier{' '}
                     <small className="font-medium text-lg">
-                        ({!order ? 0 : order.order_items.reduce((sum, item) => sum + item.quantity, 0)} articles)
+                        ({!order?.order_items.length ? 0 : order.order_items.reduce((sum, item) => sum + item.quantity, 0)} articles)
                     </small>
                 </h1>
                 <Link to="/" className={cn(buttonVariants({ variant: 'outline' }), 'gap-2')}>
@@ -44,71 +49,107 @@ function CartPage() {
 
 function OrderList() {
     const order = useOrderStore((state) => state.order)
-    const items = useCartStore((state) => state.items)
+    const [products, setProducts] = useState<Product[] | undefined>(undefined)
+    const queryClient = useQueryClient()
+    const deleteItemMutation = useUpdateOrder({})
+
     const incrementItem = useCartStore((state) => state.increment)
     const decrementItem = useCartStore((state) => state.decrement)
-    const includeItem = useCartStore((state) => state.include)
-    const removeItem = useCartStore((state) => state.removeItem)
     const getTotal = useCartStore((state) => state.getTotal)
     const getTotalDiscount = useCartStore((state) => state.getTotalDiscount)
     const getSubtotal = useCartStore((state) => state.getSubtotal)
     const setOpenItem = useViewItemStore((state) => state.setOpen)
 
-    return order?.order_items.length ? (
+    useEffect(() => {
+        if (order) {
+            const fetchProducts = async () => {
+                const data = await queryClient.ensureQueryData(getProductsQueryOptions())
+                setProducts(data)
+            }
+
+            fetchProducts()
+        }
+    }, [order])
+
+    return order?.order_items.length && products ? (
         <section className="grid grid-cols-3 gap-6">
             <div className="col-span-2 space-y-4">
-                {items.map((item) => (
-                    <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
-                        {item.image_url ? (
-                            <img src={item.image_url} alt={item.name} className="w-full max-w-52 aspect-square object-contain" />
-                        ) : (
-                            <div className="w-52 h-52 bg-gray-50 rounded-md" />
-                        )}
+                {order.order_items.map((item) => {
+                    const product = products.find((p) => p.id === item.product_id)!
 
-                        <div className="flex flex-col gap-2">
-                            <button type="button" className="line-clamp-2 text-left cursor-pointer" onClick={() => setOpenItem(item)}>
-                                {item.name}
-                            </button>
-                            <div className="text-muted-foreground text-sm">
-                                <p>Modèle: {item.model}</p>
-                                <p>Prix: ${item.price}</p>
-                                <p className="text-green-600">{item.quantity > 0 && 'En stock'}</p>
-                            </div>
-                            <div className="flex gap-10">
-                                <div className="flex border-2 w-fit rounded">
-                                    <button
-                                        type="button"
-                                        onClick={() => decrementItem(item)}
-                                        disabled={item.quantity === 1}
-                                        className="grid place-items-center px-2"
-                                    >
-                                        <Minus className="size-4" />
-                                    </button>
-                                    <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.orderQuantity}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => incrementItem(item)}
-                                        disabled={item.orderQuantity === item.quantity}
-                                        className="grid place-items-center px-2"
-                                    >
-                                        <Plus className="size-4" />
-                                    </button>
+                    return (
+                        <article key={item.id} className="flex shadow-md rounded-md p-4 gap-6 items-center">
+                            {product.image_url ? (
+                                <img src={product.image_url} alt={product.name} className="w-full max-w-52 aspect-square object-contain" />
+                            ) : (
+                                <div className="w-52 h-52 bg-gray-50 rounded-md" />
+                            )}
+
+                            <div className="flex flex-col gap-2">
+                                <button type="button" className="line-clamp-2 text-left cursor-pointer" onClick={() => setOpenItem(product)}>
+                                    {item.product_name}
+                                </button>
+                                <div className="text-muted-foreground text-sm">
+                                    <p>Modèle: {product.model}</p>
+                                    <p>Prix: ${item.price}</p>
+                                    <p className="text-green-600">{product.is_available && 'En stock'}</p>
                                 </div>
-                                <Button variant="ghost" onClick={() => removeItem(item)}>
-                                    <Trash2 className="size-4 mr-2" /> Supprimer
-                                </Button>
+                                <div className="flex gap-10">
+                                    <div className="flex border-2 w-fit rounded">
+                                        <button
+                                            type="button"
+                                            onClick={() => decrementItem(product)}
+                                            disabled={item.quantity === 1}
+                                            className="grid place-items-center px-2"
+                                        >
+                                            <Minus className="size-4" />
+                                        </button>
+                                        <span className="h-8 min-w-8 px-2 grid place-items-center border-x-2">{item.quantity}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => incrementItem(product)}
+                                            disabled={product.quantity === item.quantity}
+                                            className="grid place-items-center px-2"
+                                        >
+                                            <Plus className="size-4" />
+                                        </button>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        disabled={deleteItemMutation.isPending}
+                                        onClick={() =>
+                                            deleteItemMutation.mutate({
+                                                orderId: item.order_id,
+                                                values: {
+                                                    userId: order.user_id,
+                                                    orderItems: [
+                                                        {
+                                                            id: item.id,
+                                                            orderId: item.order_id,
+                                                            productId: item.product_id,
+                                                            quantity: item.quantity
+                                                        }
+                                                    ]
+                                                }
+                                            })
+                                        }
+                                    >
+                                        <Trash2 className="size-4 mr-2" /> Supprimer
+                                    </Button>
+                                </div>
+                                <div className="flex justify-end">
+                                    <Checkbox
+                                        id={item.id}
+                                        defaultChecked
+                                        disabled
+                                        // onCheckedChange={() => includeItem(item)}
+                                        className="rounded-[4px]"
+                                    />
+                                </div>
                             </div>
-                            <div className="flex justify-end">
-                                <Checkbox
-                                    id={item.id}
-                                    defaultChecked={item.included}
-                                    onCheckedChange={() => includeItem(item)}
-                                    className="rounded-[4px]"
-                                />
-                            </div>
-                        </div>
-                    </article>
-                ))}
+                        </article>
+                    )
+                })}
             </div>
             <aside className="sticky top-40 h-fit">
                 <div className="bg-muted/20 rounded-2xl shadow-md p-4 flex flex-col gap-2">

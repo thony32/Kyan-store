@@ -5,6 +5,7 @@ import type { Order } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { v4 as uuidv4 } from 'uuid'
 import { getOrderQueryOptions } from './get-order'
+import { useOrderStore } from '@/store/order-store'
 
 export function convertToSupabaseOrder({ userId }: { userId: string }): {
     id: string
@@ -49,6 +50,7 @@ type UseCreateOrderOptions = {
 
 export const useCreateOrder = ({ mutationConfig }: UseCreateOrderOptions) => {
     const queryClient = useQueryClient()
+    const setOrder = useOrderStore.getState().setOrder
 
     const { onSuccess, ...restConfig } = mutationConfig || {}
 
@@ -58,6 +60,7 @@ export const useCreateOrder = ({ mutationConfig }: UseCreateOrderOptions) => {
             queryClient.invalidateQueries({
                 queryKey: getOrderQueryOptions(data.user_id).queryKey
             })
+            setOrder(data)
             onSuccess?.(...args)
         },
         onError: (error) => {
