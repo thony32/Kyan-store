@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { useItemStore } from '@/store/edit-item-store'
 import { useQueryClient } from '@tanstack/react-query'
 import formatAdminCategories from '@/utils/format-admin-categories'
-import { useUpdateCategory } from '@/api/categories/update.category'
+import { useUpdateCategory } from '@/api/categories/update-category'
 
 export default function CategoryDialogForm() {
     const [open, setOpen] = useState(false)

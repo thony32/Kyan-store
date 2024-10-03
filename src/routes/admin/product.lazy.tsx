@@ -33,7 +33,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useItemStore } from '@/store/edit-item-store'
 import type { Product } from '@/types/api'
-import getDiscountAmount from '@/utils/get-discount-amount'
 import { useCallback, useState } from 'react'
 import { usePagination } from 'react-use-pagination'
 
@@ -160,7 +159,9 @@ const AdminProduct = () => {
                                                     </TableCell>
                                                     <TableCell>${product.price}</TableCell>
                                                     <TableCell className="hidden md:table-cell">{product.quantity}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">-{getDiscountAmount(product)}%</TableCell>
+                                                    <TableCell className="hidden md:table-cell">
+                                                        -{product.discount_percentage ? product.discount_percentage * 10 : 0}%
+                                                    </TableCell>
                                                     <TableCell>
                                                         <DropdownMenu>
                                                             <DropdownMenuTrigger asChild>

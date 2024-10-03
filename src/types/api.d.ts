@@ -85,3 +85,8 @@ export type Payment = {
     is_confirmed: boolean
     order: Order
 }
+
+export type Discount = Entity<{
+    percentage: number
+    valid_until: string
+}>

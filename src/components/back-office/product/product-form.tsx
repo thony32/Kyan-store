@@ -14,6 +14,7 @@ import { useItemStore } from '@/store/edit-item-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { getProductsQueryOptions } from '@/api/products/get-products'
 import { Label } from '@/components/ui/label'
+import { useDiscounts } from '@/api/discount/get-discounts'
 
 export default function ProductForm() {
     const [open, setOpen] = useState(false)
@@ -24,6 +25,7 @@ export default function ProductForm() {
     const [productEdit, setProductEdit] = useState<CreateProductInput>(defaultValues)
 
     const { data: categoriesData, status: categoriesStatus } = useCategories({})
+    const { data: discountsData, status: discountsStatus } = useDiscounts({})
     const createMutation = useCreateProduct({})
     const updateMutation = useUpdateProduct({})
 
@@ -270,16 +272,17 @@ export default function ProductForm() {
                                         }}
                                         value={productEdit.discountId}
                                     >
-                                        <SelectTrigger
-                                            className="text-muted-foreground"
-                                            // disabled={discountsStatus !== "success"}
-                                        >
+                                        <SelectTrigger className="text-muted-foreground" disabled={discountsStatus !== 'success'}>
                                             <SelectValue placeholder="Sélectionner son parent" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem className="capitalize" value="Tsisy lty a">
-                                                Tsisy lty a
-                                            </SelectItem>
+                                            {discountsStatus === 'success' &&
+                                                discountsData.map((discount) => (
+                                                    <SelectItem key={discount.id} value={discount.id}>
+                                                        -<b>{discount.percentage * 10}%</b> jusqu'à{' '}
+                                                        <b>{Intl.DateTimeFormat('fr-FR').format(new Date(discount.valid_until))}</b>
+                                                    </SelectItem>
+                                                ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
