@@ -13,7 +13,7 @@ const Topbar = () => {
         <div className="flex justify-between px-8 py-4">
             <h1 className="text-2xl font-bold capitalize">{currentPageName}</h1>
             <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="flex gap-2 items-center rounded-full">
                         <Avatar>
                             <AvatarFallback>AD</AvatarFallback>

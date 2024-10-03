@@ -4,7 +4,7 @@ import IALogo from '../misc/ia-logo'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
-import { BotLoader, BotResponse, BotResponseProduct } from './bot-response'
+import { BotLoader, BotResponse } from './bot-response'
 import UserMessage from './user-message'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { useChat } from '@/api/chatbot/chat'
@@ -12,7 +12,6 @@ import { useChatStore } from '@/store/chat-store'
 
 const ChatDropdown = () => {
     const match = useMatch({ from: '/admin', shouldThrow: false })
-    if (match) return null
     const [messageText, setMessageText] = useState('')
     const chats = useChatStore((state) => state.chat)
     const setChats = useChatStore((state) => state.setChat)
@@ -32,6 +31,8 @@ const ChatDropdown = () => {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
         }
     }, [chats])
+
+    if (match) return null
 
     return (
         <DropdownMenu>

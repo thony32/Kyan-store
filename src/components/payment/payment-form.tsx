@@ -10,12 +10,6 @@ const PaymentForm = ({ user, orderId }: { user: User; orderId: string }) => {
     const navigate = useNavigate()
     const confirmPaymentMutation = useConfirmPayment({ userId: user.id })
 
-    useEffect(() => {
-        if (confirmPaymentMutation.isSuccess) {
-            navigate({ to: '/cart' })
-        }
-    }, [confirmPaymentMutation.isSuccess])
-
     return (
         <div className="w-full lg:w-1/2 px-24 py-8">
             <h2 className="text-xl font-bold mb-6">Payer par carte</h2>

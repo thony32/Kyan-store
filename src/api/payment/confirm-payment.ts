@@ -50,6 +50,7 @@ export const useConfirmPayment = ({ userId, mutationConfig }: UseConfirmPaymentO
             setOrder(null)
             toast.success('Commande payée avec succès')
             onSuccess?.(...args)
+            window.location.href = '/cart'
         },
         onError: (error) => {
             console.log(error)
