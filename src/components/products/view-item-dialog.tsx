@@ -88,9 +88,9 @@ export default function ViewItemDialog() {
                                         Fermer
                                     </Button>
                                 </DialogClose>
-                                {user?.role === 'CUSTOMER' && !order?.order_items.find((item) => item.product_id === itemToView.id) ? (
+                                {user && user.role === 'CUSTOMER' && !order?.order_items.find((item) => item.product_id === itemToView.id) ? (
                                     <AddToCartButton product={itemToView} />
-                                ) : match ? null : (
+                                ) : match || user?.role === 'ADMIN' ? null : (
                                     <Link to="/cart" className={cn(buttonVariants({ variant: 'outline' }))} onClick={() => setOpenItem(false)}>
                                         Voir le panier <ShoppingBag className="size-4 ml-2" />
                                     </Link>

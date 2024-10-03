@@ -26,7 +26,7 @@ function CartPage() {
     const navigate = useNavigate({ from: '/cart' })
     const setShouldOpen = useAuthDialogStore((state) => state.setShouldOpen)
 
-    if (!user) {
+    if (!user || user.role === 'ADMIN') {
         setShouldOpen(true)
         navigate({ to: '/' })
         return null
