@@ -4,7 +4,6 @@ import type { Order } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/libs/supabase-client'
 import { v4 as uuidv4 } from 'uuid'
-import { toast } from 'sonner'
 import { getOrderQueryOptions } from './get-order'
 import { useOrderStore } from '@/store/order-store'
 
@@ -112,7 +111,6 @@ export const useCreateUpdateOrder = ({ userId, mutationConfig }: UseCreateUpdate
                 queryKey: getOrderQueryOptions(userId).queryKey
             })
             setOrder(data[0])
-            toast.success('Commande mise à jour')
             onSuccess?.(...args)
         },
         onError: (error) => {

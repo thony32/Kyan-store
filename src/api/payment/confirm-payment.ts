@@ -6,23 +6,46 @@ import { toast } from 'sonner'
 import { getOrderQueryOptions } from '@/api/order/get-order'
 import { useOrderStore } from '@/store/order-store'
 
-export const confirmPayment = async (paymentId: string) => {
+export const confirmPayment = async ({
+    paymentId,
+    orderId,
+    amount
+}: {
+    paymentId?: string
+    orderId: string
+    amount: number
+}) => {
     // return api.put(`/payment/${paymentId}/confirm`);
 
-    const { data, error } = await supabase
-        .from('payment')
-        .update({
-            is_confirmed: true
-        })
-        .eq('order_id', paymentId)
-        .select('*')
-        .single()
+    let supabaseQuery: any
+
+    if (!paymentId) {
+        supabaseQuery = supabase
+            .from('payment')
+            .update({
+                is_confirmed: true
+            })
+            .eq('order_id', orderId)
+            .select('*')
+            .single()
+    } else {
+        supabaseQuery = supabase
+            .from('payment')
+            .update({
+                is_confirmed: true
+            })
+            .eq('id', paymentId)
+            .select('*')
+            .single()
+    }
+
+    const { data, error } = await supabaseQuery
 
     if (error) {
         throw new Error(error.message)
     }
 
-    const { error: orderError } = await supabase.from('customer_order').update({ status: 'APPROVED' }).eq('id', data.order_id)
+    const { error: orderError } = await supabase.from('customer_order').update({ status: 'APPROVED', total_amount: amount }).eq('id', data.order_id)
 
     if (orderError) {
         throw new Error(orderError.message)
@@ -32,7 +55,7 @@ export const confirmPayment = async (paymentId: string) => {
 }
 
 type UseConfirmPaymentOptions = {
-    userId?: string
+    userId: string
     mutationConfig?: MutationConfig<typeof confirmPayment>
 }
 

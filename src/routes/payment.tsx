@@ -4,24 +4,20 @@ import PaymentForm from '@/components/payment/payment-form'
 import { Button } from '@/components/ui/button'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
-import { Link, createLazyFileRoute, useNavigate } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import StripeLogo from '@/components/assets/img/stripe.svg'
 import { useOrderUtils } from '@/utils/order-utils'
 import getDiscountAmount from '@/utils/get-discount-amount'
+import { usePaymentIdStore } from '@/store/payment-store'
+import { redirect } from '@tanstack/react-router'
 
 const PaymentPage = () => {
-    const user = useAuthStore((state) => state.user)
-    const navigate = useNavigate({ from: '/cart' })
-    const setShouldOpen = useAuthDialogStore((state) => state.setShouldOpen)
+    const user = useAuthStore((state) => state.user!)
+    const paymentId = usePaymentIdStore((state) => state.paymentId)
 
-    if (!user) {
-        setShouldOpen(true)
-        navigate({ to: '/' })
-        return null
-    }
-
-    const { data: order, status: statusOrder } = useOrder({ userId: user.id })
+    const { data: order, status: statusOrder } = useOrder({ userId: user?.id })
     const { data: products, status: statusProducts } = useProducts({})
+    const { getSubtotal } = useOrderUtils(order?.[0].order_items, products)
 
     if (statusOrder === 'pending' || statusProducts === 'pending') {
         return (
@@ -33,7 +29,6 @@ const PaymentPage = () => {
 
     return (
         <div className="min-h-screen flex px-[15%] py-[5%]">
-            {/* NOTE: Left Section: Order Summary */}
             {order?.[0]?.order_items.length && products ? (
                 <>
                     <div className="w-full lg:w-1/2 p-8 bg-gray-50 space-y-4">
@@ -42,10 +37,10 @@ const PaymentPage = () => {
                         </Link>
                         <h2 className="text-2xl font-bold">Payer</h2>
                         <div className="text-4xl font-bold">
-                            {useOrderUtils(order[0].order_items, products).getSubtotal} <span className="text-sm"> $US</span>
+                            {getSubtotal} <span className="text-sm"> $US</span>
                         </div>
 
-                        {/* NOTE: Order Items */}
+                        {/* Order Items */}
                         {order[0].order_items.map((item) => {
                             const product = products.find((p) => p.id === item.product_id)!
 
@@ -72,14 +67,26 @@ const PaymentPage = () => {
                             )
                         })}
                     </div>
+
                     {/* NOTE: Right Section: Payment Form */}
-                    <PaymentForm user={user} orderId={order[0].id} />
+                    <PaymentForm user={user} paymentId={paymentId} orderId={order[0].id} amount={getSubtotal} />
                 </>
             ) : null}
         </div>
     )
 }
 
-export const Route = createLazyFileRoute('/payment')({
+export const Route = createFileRoute('/payment')({
+    loader: () => {
+        const user = useAuthStore.getState().user
+        const setShouldOpen = useAuthDialogStore.getState().setShouldOpen
+
+        if (!user) {
+            setShouldOpen(true)
+            throw redirect({
+                to: '/'
+            })
+        }
+    },
     component: PaymentPage
 })

@@ -15,6 +15,11 @@ const Admin = () => {
         return null
     }
 
+    if (user.role !== 'ADMIN') {
+        navigate({ to: '/' })
+        return null
+    }
+
     return (
         <div className="grid grid-cols-12">
             <Sidebar />

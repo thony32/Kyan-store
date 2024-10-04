@@ -3,11 +3,18 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import type { User } from '@/types/api'
-import { useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
 
-const PaymentForm = ({ user, orderId }: { user: User; orderId: string }) => {
-    const navigate = useNavigate()
+const PaymentForm = ({
+    user,
+    paymentId,
+    orderId,
+    amount
+}: {
+    user: User
+    paymentId: string | null
+    orderId: string
+    amount: number
+}) => {
     const confirmPaymentMutation = useConfirmPayment({ userId: user.id })
 
     return (
@@ -63,7 +70,7 @@ const PaymentForm = ({ user, orderId }: { user: User; orderId: string }) => {
 
                 {/* NOTE: Payment Button */}
                 <Button
-                    onClick={() => confirmPaymentMutation.mutate(orderId)}
+                    onClick={() => confirmPaymentMutation.mutate({ paymentId, orderId, amount })}
                     disabled={confirmPaymentMutation.isPending}
                     type="button"
                     className="w-full bg-blue-500 text-white py-2"

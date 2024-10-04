@@ -77,7 +77,7 @@ export default function ViewItemDialog() {
                             <div className="flex flex-col gap-2">
                                 <div className="flex justify-between items-center">
                                     <h4 className="font-semibold">Avis</h4>
-                                    <RatingForm />
+                                    {user?.role === 'CUSTOMER' && <RatingForm />}
                                 </div>
                                 <hr />
                                 <RatingList productId={itemToView.id} />

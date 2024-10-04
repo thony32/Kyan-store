@@ -13,14 +13,15 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as PaymentImport } from './routes/payment'
 import { Route as PublicImport } from './routes/_public'
 
 // Create Virtual Routes
 
-const PaymentLazyImport = createFileRoute('/payment')()
 const AdminLazyImport = createFileRoute('/admin')()
 const PublicIndexLazyImport = createFileRoute('/_public/')()
 const AdminProductLazyImport = createFileRoute('/admin/product')()
+const AdminPaymentLazyImport = createFileRoute('/admin/payment')()
 const AdminDiscountLazyImport = createFileRoute('/admin/discount')()
 const AdminDashboardLazyImport = createFileRoute('/admin/dashboard')()
 const AdminCategoryLazyImport = createFileRoute('/admin/category')()
@@ -28,15 +29,15 @@ const PublicCartLazyImport = createFileRoute('/_public/cart')()
 
 // Create/Update Routes
 
-const PaymentLazyRoute = PaymentLazyImport.update({
-  path: '/payment',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/payment.lazy').then((d) => d.Route))
-
 const AdminLazyRoute = AdminLazyImport.update({
   path: '/admin',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/admin.lazy').then((d) => d.Route))
+
+const PaymentRoute = PaymentImport.update({
+  path: '/payment',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const PublicRoute = PublicImport.update({
   id: '/_public',
@@ -52,6 +53,11 @@ const AdminProductLazyRoute = AdminProductLazyImport.update({
   path: '/product',
   getParentRoute: () => AdminLazyRoute,
 } as any).lazy(() => import('./routes/admin/product.lazy').then((d) => d.Route))
+
+const AdminPaymentLazyRoute = AdminPaymentLazyImport.update({
+  path: '/payment',
+  getParentRoute: () => AdminLazyRoute,
+} as any).lazy(() => import('./routes/admin/payment.lazy').then((d) => d.Route))
 
 const AdminDiscountLazyRoute = AdminDiscountLazyImport.update({
   path: '/discount',
@@ -90,18 +96,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicImport
       parentRoute: typeof rootRoute
     }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentImport
+      parentRoute: typeof rootRoute
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/payment': {
-      id: '/payment'
-      path: '/payment'
-      fullPath: '/payment'
-      preLoaderRoute: typeof PaymentLazyImport
       parentRoute: typeof rootRoute
     }
     '/_public/cart': {
@@ -130,6 +136,13 @@ declare module '@tanstack/react-router' {
       path: '/discount'
       fullPath: '/admin/discount'
       preLoaderRoute: typeof AdminDiscountLazyImport
+      parentRoute: typeof AdminLazyImport
+    }
+    '/admin/payment': {
+      id: '/admin/payment'
+      path: '/payment'
+      fullPath: '/admin/payment'
+      preLoaderRoute: typeof AdminPaymentLazyImport
       parentRoute: typeof AdminLazyImport
     }
     '/admin/product': {
@@ -168,6 +181,7 @@ interface AdminLazyRouteChildren {
   AdminCategoryLazyRoute: typeof AdminCategoryLazyRoute
   AdminDashboardLazyRoute: typeof AdminDashboardLazyRoute
   AdminDiscountLazyRoute: typeof AdminDiscountLazyRoute
+  AdminPaymentLazyRoute: typeof AdminPaymentLazyRoute
   AdminProductLazyRoute: typeof AdminProductLazyRoute
 }
 
@@ -175,6 +189,7 @@ const AdminLazyRouteChildren: AdminLazyRouteChildren = {
   AdminCategoryLazyRoute: AdminCategoryLazyRoute,
   AdminDashboardLazyRoute: AdminDashboardLazyRoute,
   AdminDiscountLazyRoute: AdminDiscountLazyRoute,
+  AdminPaymentLazyRoute: AdminPaymentLazyRoute,
   AdminProductLazyRoute: AdminProductLazyRoute,
 }
 
@@ -184,23 +199,25 @@ const AdminLazyRouteWithChildren = AdminLazyRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof PublicRouteWithChildren
+  '/payment': typeof PaymentRoute
   '/admin': typeof AdminLazyRouteWithChildren
-  '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
   '/admin/category': typeof AdminCategoryLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
   '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/payment': typeof AdminPaymentLazyRoute
   '/admin/product': typeof AdminProductLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/payment': typeof PaymentRoute
   '/admin': typeof AdminLazyRouteWithChildren
-  '/payment': typeof PaymentLazyRoute
   '/cart': typeof PublicCartLazyRoute
   '/admin/category': typeof AdminCategoryLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
   '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/payment': typeof AdminPaymentLazyRoute
   '/admin/product': typeof AdminProductLazyRoute
   '/': typeof PublicIndexLazyRoute
 }
@@ -208,12 +225,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_public': typeof PublicRouteWithChildren
+  '/payment': typeof PaymentRoute
   '/admin': typeof AdminLazyRouteWithChildren
-  '/payment': typeof PaymentLazyRoute
   '/_public/cart': typeof PublicCartLazyRoute
   '/admin/category': typeof AdminCategoryLazyRoute
   '/admin/dashboard': typeof AdminDashboardLazyRoute
   '/admin/discount': typeof AdminDiscountLazyRoute
+  '/admin/payment': typeof AdminPaymentLazyRoute
   '/admin/product': typeof AdminProductLazyRoute
   '/_public/': typeof PublicIndexLazyRoute
 }
@@ -222,33 +240,36 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/admin'
     | '/payment'
+    | '/admin'
     | '/cart'
     | '/admin/category'
     | '/admin/dashboard'
     | '/admin/discount'
+    | '/admin/payment'
     | '/admin/product'
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/admin'
     | '/payment'
+    | '/admin'
     | '/cart'
     | '/admin/category'
     | '/admin/dashboard'
     | '/admin/discount'
+    | '/admin/payment'
     | '/admin/product'
     | '/'
   id:
     | '__root__'
     | '/_public'
-    | '/admin'
     | '/payment'
+    | '/admin'
     | '/_public/cart'
     | '/admin/category'
     | '/admin/dashboard'
     | '/admin/discount'
+    | '/admin/payment'
     | '/admin/product'
     | '/_public/'
   fileRoutesById: FileRoutesById
@@ -256,14 +277,14 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
+  PaymentRoute: typeof PaymentRoute
   AdminLazyRoute: typeof AdminLazyRouteWithChildren
-  PaymentLazyRoute: typeof PaymentLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
+  PaymentRoute: PaymentRoute,
   AdminLazyRoute: AdminLazyRouteWithChildren,
-  PaymentLazyRoute: PaymentLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -279,8 +300,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_public",
-        "/admin",
-        "/payment"
+        "/payment",
+        "/admin"
       ]
     },
     "/_public": {
@@ -290,17 +311,18 @@ export const routeTree = rootRoute
         "/_public/"
       ]
     },
+    "/payment": {
+      "filePath": "payment.tsx"
+    },
     "/admin": {
       "filePath": "admin.lazy.tsx",
       "children": [
         "/admin/category",
         "/admin/dashboard",
         "/admin/discount",
+        "/admin/payment",
         "/admin/product"
       ]
-    },
-    "/payment": {
-      "filePath": "payment.lazy.tsx"
     },
     "/_public/cart": {
       "filePath": "_public/cart.lazy.tsx",
@@ -316,6 +338,10 @@ export const routeTree = rootRoute
     },
     "/admin/discount": {
       "filePath": "admin/discount.lazy.tsx",
+      "parent": "/admin"
+    },
+    "/admin/payment": {
+      "filePath": "admin/payment.lazy.tsx",
       "parent": "/admin"
     },
     "/admin/product": {

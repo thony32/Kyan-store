@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
 import { useOrderStore } from '@/store/order-store'
+import { usePaymentIdStore } from '@/store/payment-store'
 import { useViewItemStore } from '@/store/view-item-store'
 import type { Product } from '@/types/api'
 import { cn } from '@/utils/cn'
@@ -59,13 +60,14 @@ function OrderList() {
     const updateItemMutation = useUpdateOrderItem({ userId: order?.user_id })
     const deleteItemMutation = useDeleteOrderItem({ userId: order?.user_id })
     const payOrderMutation = usePayOrder({ userId: order?.user_id })
+    const paymentId = usePaymentIdStore((state) => state.paymentId)
     const navigate = useNavigate({ from: '/cart' })
 
     const { getTotal, getTotalDiscount, getSubtotal } = useOrderUtils(order?.order_items, products)
     const setOpenItem = useViewItemStore((state) => state.setOpen)
 
     const handlePay = (orderId: string) => {
-        payOrderMutation.mutate(orderId)
+        if (!paymentId) payOrderMutation.mutate(orderId)
         navigate({ to: '/payment' })
     }
 
