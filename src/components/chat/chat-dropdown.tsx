@@ -1,14 +1,14 @@
+import { useChat } from '@/api/chatbot/chat'
+import { useChatStore } from '@/store/chat-store'
 import { useMatch } from '@tanstack/react-router'
 import { X } from 'lucide-react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import IALogo from '../misc/ia-logo'
 import { Button } from '../ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
 import { BotLoader, BotResponse } from './bot-response'
 import UserMessage from './user-message'
-import { type FormEvent, useEffect, useRef, useState } from 'react'
-import { useChat } from '@/api/chatbot/chat'
-import { useChatStore } from '@/store/chat-store'
 
 const ChatDropdown = () => {
     const match = useMatch({ from: '/admin', shouldThrow: false })

@@ -1,14 +1,14 @@
 import { useOrder } from '@/api/order/get-order'
 import { useProducts } from '@/api/products/get-products'
+import StripeLogo from '@/components/assets/img/stripe.svg'
 import PaymentForm from '@/components/payment/payment-form'
 import { Button } from '@/components/ui/button'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import StripeLogo from '@/components/assets/img/stripe.svg'
-import { useOrderUtils } from '@/utils/order-utils'
-import getDiscountAmount from '@/utils/get-discount-amount'
 import { usePaymentIdStore } from '@/store/payment-store'
+import getDiscountAmount from '@/utils/get-discount-amount'
+import { useOrderUtils } from '@/utils/order-utils'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { redirect } from '@tanstack/react-router'
 
 const PaymentPage = () => {
