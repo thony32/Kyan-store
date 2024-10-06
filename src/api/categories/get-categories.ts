@@ -21,7 +21,7 @@ export const getSupabaseCategories = async (): Promise<Category[]> => {
 
 export const getCategoriesQueryOptions = () => ({
     queryKey: ['categories'],
-    queryFn: getSupabaseCategories
+    queryFn: getCategories
 })
 
 type UseCategoriesOptions = {
