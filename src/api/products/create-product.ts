@@ -1,9 +1,8 @@
+import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { supabase } from '@/libs/supabase-client'
 import type { Product } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { getProductsQueryOptions } from './get-products'
 
@@ -37,63 +36,12 @@ export const defaultValues: CreateProductInput = {
     isAvailable: true
 }
 
-function convertToSupabaseProduct(product: CreateProductInput): {
-    id: string
-    name: string
-    description: string
-    price: number
-    stock_quantity: number
-    brand: string
-    model: string
-    category_id: string
-    subcategory_id: string | null
-    discount_id: string | null
-    is_available: boolean
-} {
-    return {
-        id: uuidv4(), // paste a genereted uuid
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        brand: product.brand,
-        model: product.model,
-        is_available: true,
-        stock_quantity: product.stockQuantity,
-        category_id: product.categoryId,
-        subcategory_id: product.subCategoryId || null,
-        discount_id: product.discountId || null
-    }
-}
-
 export const createProduct = async ({
     values
 }: {
     values: CreateProductInput
 }): Promise<Product> => {
-    // return api.post("/admin/product", data);
-
-    // supabase
-    const { data, error } = await supabase
-        .from('product')
-        .insert({ ...convertToSupabaseProduct(values) })
-        .select('*, category:category_id(name), subcategory:subcategory_id(name), ratings:rating(*), image(*), discount(*)')
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return data?.map((product) => ({
-        ...product,
-        quantity: product.stock_quantity,
-        category_name: product.category.name,
-        subcategory_name: product.subcategory ? product.subcategory.name : null,
-        discount_id: product.discount?.id,
-        discount_percentage: product.discount?.percentage,
-        discount_validity: product.discount?.validity,
-        image_id: product.image?.id,
-        image_url: product.image?.url,
-        is_available: true
-    }))[0]
+    return api.post('/admin/product', values)
 }
 
 type UseCreateProductOptions = {

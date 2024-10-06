@@ -1,5 +1,5 @@
+import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { supabase } from '@/libs/supabase-client'
 import type { Discount } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -36,20 +36,7 @@ export const createDiscount = async ({
 }: {
     values: CreateDiscountInput
 }): Promise<Discount> => {
-    // return api.post("/admin/discount", data);
-
-    // supabase
-    const { data, error } = await supabase
-        .from('discount')
-        .insert({ ...convertToSupabaseDiscount(values) })
-        .select('*')
-        .single()
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return data
+    return api.post('/admin/discount', values)
 }
 
 type UseCreateDiscountOptions = {

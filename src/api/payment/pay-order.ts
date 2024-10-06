@@ -1,11 +1,12 @@
+import { getOrderQueryOptions } from '@/api/order/get-order'
+//FIXME: Miandry fix order
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/libs/supabase-client'
+import { usePaymentIdStore } from '@/store/payment-store'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { v4 as uuidv4 } from 'uuid'
-import { getOrderQueryOptions } from '@/api/order/get-order'
-import { usePaymentIdStore } from '@/store/payment-store'
 
 export const payOrder = async (orderId: string): Promise<string> => {
     // const response = await api.post("/payment", { orderId, paymentMethod: "credit_card" });

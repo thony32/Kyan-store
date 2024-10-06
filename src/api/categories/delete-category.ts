@@ -1,9 +1,8 @@
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getCategoriesQueryOptions } from './get-categories'
-import { supabase } from '@/libs/supabase-client'
 import { toast } from 'sonner'
+import { getCategoriesQueryOptions } from './get-categories'
 
 export const deleteCategory = async ({
     categoryId,
@@ -12,12 +11,8 @@ export const deleteCategory = async ({
     categoryId: string
     isMainCategory: boolean
 }) => {
-    // if (isMainCategory) return api.delete(`admin/category/${categoryId}`);
-    // return api.delete(`admin/subcategory/${categoryId}`);
-
-    // supabase
-    if (isMainCategory) return await supabase.from('category').delete().eq('id', categoryId)
-    return await supabase.from('sub_category').delete().eq('id', categoryId)
+    if (isMainCategory) return api.delete(`/admin/category/${categoryId}`)
+    return api.delete(`/admin/subcategory/${categoryId}`)
 }
 
 type UseDeleteCategoryOptions = {

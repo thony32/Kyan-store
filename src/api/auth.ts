@@ -1,11 +1,12 @@
 import { api } from '@/libs/api-client'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
-import { useAuthStore, type UserAuth } from '@/store/auth-store'
+import { type UserAuth, useAuthStore } from '@/store/auth-store'
 import type { AuthResponse } from '@/types/api'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+// NOTE: Mety
 export const loginInput = z.object({
     email: z.string().email("L'adresse email est invalide"),
     password: z.string().min(4, 'Le mot de passe doit contenir au moins 4 caractères').max(255)

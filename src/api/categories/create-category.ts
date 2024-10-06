@@ -1,5 +1,5 @@
+import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { supabase } from '@/libs/supabase-client'
 import type { Category } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -45,21 +45,8 @@ export const createCategory = async ({
 }: {
     values: CreateCategoryInput
 }): Promise<Category> => {
-    // if(values.isMainCategory)
-    // return api.post("/admin/category", data);
-    // else return api.post("/admin/subcategory", data);
-
-    // supabase
-    const { data, error } = await supabase
-        .from(values.isMainCategory ? 'category' : 'sub_category')
-        .insert({ ...convertToSupabaseCategory(values) })
-        .select('*')
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return data[0]
+    if (values.isMainCategory) return api.post('/admin/category', values)
+    return api.post('/admin/subcategory', values)
 }
 
 type UseCreateCategoryOptions = {

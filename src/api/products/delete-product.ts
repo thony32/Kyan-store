@@ -1,13 +1,11 @@
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getProductsQueryOptions } from './get-products'
-import { supabase } from '@/libs/supabase-client'
 import { toast } from 'sonner'
+import { getProductsQueryOptions } from './get-products'
 
 export const deleteProduct = async ({ productId }: { productId: string }) => {
-    // return api.delete(`admin/product/${productId}`);
-    return await supabase.from('product').delete().eq('id', productId)
+    return api.delete(`admin/product/${productId}`)
 }
 
 type UseDeleteProductOptions = {

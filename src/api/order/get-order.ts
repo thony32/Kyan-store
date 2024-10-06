@@ -14,37 +14,37 @@ export const getOrder = async ({
     return response.data
 }
 
-export const getSupabaseOrder = async ({
-    userId
-}: {
-    userId?: string
-}): Promise<Order[]> => {
-    if (!userId) return []
+// export const getSupabaseOrder = async ({
+//     userId
+// }: {
+//     userId?: string
+// }): Promise<Order[]> => {
+//     if (!userId) return []
 
-    const { data, error } = await supabase
-        .from('customer_order')
-        .select('*, order_items:order_item(*, product:product_id(name, price))')
-        .eq('status', 'PENDING')
-        .eq('user_id', userId)
-        .order('id', { referencedTable: 'order_item', ascending: true })
+//     const { data, error } = await supabase
+//         .from('customer_order')
+//         .select('*, order_items:order_item(*, product:product_id(name, price))')
+//         .eq('status', 'PENDING')
+//         .eq('user_id', userId)
+//         .order('id', { referencedTable: 'order_item', ascending: true })
 
-    if (error) {
-        throw new Error(error.message)
-    }
+//     if (error) {
+//         throw new Error(error.message)
+//     }
 
-    return data.map((order) => ({
-        ...order,
-        order_items: order.order_items.map((orderItem: any) => ({
-            ...orderItem,
-            product_name: orderItem.product.name,
-            price: orderItem.product.price
-        }))
-    }))
-}
+//     return data.map((order) => ({
+//         ...order,
+//         order_items: order.order_items.map((orderItem: any) => ({
+//             ...orderItem,
+//             product_name: orderItem.product.name,
+//             price: orderItem.product.price
+//         }))
+//     }))
+// }
 
 export const getOrderQueryOptions = (userId?: string) => ({
     queryKey: ['order', userId],
-    queryFn: () => getSupabaseOrder({ userId })
+    queryFn: () => getOrder({ userId })
 })
 
 type UseOrderOptions = {

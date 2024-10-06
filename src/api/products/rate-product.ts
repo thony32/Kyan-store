@@ -37,6 +37,7 @@ export const rateProduct = async ({
 }: {
     values: RateProductInput
 }): Promise<Rating> => {
+    //FIXME: Tsy mety, mila user_id
     // return api.post("/rating", data);
 
     // supabase
