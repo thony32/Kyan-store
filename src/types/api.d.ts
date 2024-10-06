@@ -17,7 +17,7 @@ export type User = Entity<{
 export type AuthResponse = {
     access_token: string
     refresh_token: string
-} & Omit<User, 'id'>
+} & User
 
 export type Subcategory = Entity<{
     name: string
