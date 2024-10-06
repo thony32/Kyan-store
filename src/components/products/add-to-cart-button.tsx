@@ -6,9 +6,8 @@ import { useOrderStore } from '@/store/order-store'
 import { useCreateUpdateOrder } from '@/api/order/create-update-order'
 
 export default function AddToCartButton({ product }: { product: Product }) {
-    const user = useAuthStore((state) => state.user)
+    const user = useAuthStore((state) => state.user!)
     const order = useOrderStore((state) => state.order)
-    if (!user) return null
 
     const createUpdateMutation = useCreateUpdateOrder({ userId: user.id })
 

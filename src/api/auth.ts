@@ -1,6 +1,6 @@
 import { api } from '@/libs/api-client'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
-import { type UserAuth, useAuthStore } from '@/store/auth-store'
+import { useAuthStore } from '@/store/auth-store'
 import type { AuthResponse } from '@/types/api'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -50,7 +50,8 @@ export const useLoginMutation = () => {
         mutationFn: login,
         mutationKey: ['login'],
         onSuccess: (data: AuthResponse) => {
-            const user: UserAuth = {
+            const user = {
+                id: data.id,
                 email: data.email,
                 first_name: data.first_name,
                 last_name: data.last_name,
@@ -72,7 +73,8 @@ export const useRegisterMutation = () => {
         mutationFn: register,
         mutationKey: ['register'],
         onSuccess: (data: AuthResponse) => {
-            const user: UserAuth = {
+            const user = {
+                id: data.id,
                 email: data.email,
                 first_name: data.first_name,
                 last_name: data.last_name,
