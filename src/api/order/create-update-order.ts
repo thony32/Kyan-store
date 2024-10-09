@@ -3,7 +3,6 @@ import type { MutationConfig } from '@/libs/react-query'
 import { useOrderStore } from '@/store/order-store'
 import type { Order } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { v4 as uuidv4 } from 'uuid'
 import { getOrderQueryOptions } from './get-order'
 
 // TODO: We don't need the orderId while using the api
@@ -15,20 +14,6 @@ type CreateUpdateOrderInput = {
         productId: string
         quantity: number
     }[]
-}
-
-export function convertToSupabaseOrder(order: CreateUpdateOrderInput): {
-    id: string
-    order_id?: string
-    product_id: string
-    quantity: number
-} {
-    return {
-        id: uuidv4(),
-        order_id: order.orderItems[0].orderId,
-        product_id: order.orderItems[0].productId,
-        quantity: order.orderItems[0].quantity
-    }
 }
 
 export const createUpdateOrder = async ({

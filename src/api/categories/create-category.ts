@@ -3,7 +3,6 @@ import type { MutationConfig } from '@/libs/react-query'
 import type { Category } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 import { getCategoriesQueryOptions } from './get-categories'
 
@@ -19,25 +18,6 @@ export const defaultValues: CreateCategoryInput = {
     name: '',
     isMainCategory: true,
     categoryId: ''
-}
-
-export function convertToSupabaseCategory(category: CreateCategoryInput): {
-    id: string
-    name: string
-    category_id?: string
-    is_main_category?: boolean
-} {
-    if (category.isMainCategory)
-        return {
-            id: uuidv4(),
-            name: category.name,
-            is_main_category: category.isMainCategory
-        }
-    return {
-        id: uuidv4(),
-        name: category.name,
-        category_id: category.categoryId
-    }
 }
 
 export const createCategory = async ({
