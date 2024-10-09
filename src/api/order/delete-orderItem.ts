@@ -1,23 +1,12 @@
-// FIXME: MIla user id
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { supabase } from '@/libs/supabase-client'
 import { useOrderStore } from '@/store/order-store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { getOrderQueryOptions } from './get-order'
 
 export const deleteOrderITem = async (orderItem: string): Promise<string> => {
-    // return api.delete(`/admin/order-item/${values.id}`);
-    // if response return orderItem
-
-    const { error } = await supabase.from('order_item').delete().eq('id', orderItem)
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return orderItem
+    return await api.delete(`/order-item/${orderItem}`)
 }
 
 type UseDeleteOrderItemOptions = {

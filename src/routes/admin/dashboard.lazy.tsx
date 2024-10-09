@@ -64,7 +64,7 @@ const Dashboard = () => {
                 <StatCards />
             </div>
             <div className="w-3/4">
-                <ChartContainer config={chartConfig}>
+                {/* <ChartContainer config={chartConfig}>
                     <h1 className="text-xl uppercase font-bold">Nombre de produits par catégorie</h1>
                     <BarChart accessibilityLayer data={chartData}>
                         <CartesianGrid vertical={false} />
@@ -74,7 +74,7 @@ const Dashboard = () => {
                             <Bar key={category.id} dataKey={category.name.toLowerCase()} fill={categoryColors[category.name] || 'black'} radius={4} />
                         ))}
                     </BarChart>
-                </ChartContainer>
+                </ChartContainer> */}
             </div>
         </div>
     )

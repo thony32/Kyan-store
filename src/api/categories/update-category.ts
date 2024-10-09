@@ -29,7 +29,6 @@ export const updateCategory = async ({
     values: CreateCategoryInput
     categoryId: string
 }): Promise<Category> => {
-    // FIXME: Tsy mety
     if (values.isMainCategory) return api.put(`/admin/category/${categoryId}`, values)
     return api.put(`/admin/subcategory/${categoryId}`, values)
 

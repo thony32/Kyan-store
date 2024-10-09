@@ -1,15 +1,9 @@
-// FIXME: Mila endpoint
-import { supabase } from '@/libs/supabase-client'
+import { api } from '@/libs/api-client'
 import { useQuery } from '@tanstack/react-query'
 
 export const getSupabaseUser = async () => {
-    const { data, error } = await supabase.from('_user').select('*').eq('role', 'CUSTOMER')
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return data
+    const response = await api.get('/admin/customer')
+    return response.data
 }
 
 export const getOrderQueryOptions = () => ({

@@ -1,4 +1,3 @@
-//FIXME: Miandry fix order
 import { api } from '@/libs/api-client'
 import type { QueryConfig } from '@/libs/react-query'
 import type { Payment } from '@/types/api'

@@ -1,7 +1,5 @@
-// FIXME: Mile user id
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
-import { supabase } from '@/libs/supabase-client'
 import { useOrderStore } from '@/store/order-store'
 import type { OrderItem } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -15,34 +13,13 @@ type UpdateOrderItemInput = {
     quantity: number
 }
 
-export function convertToSupabaseOrder(orderItem: UpdateOrderItemInput): {
-    id: string
-    order_id: string
-    product_id: string
-    quantity: number
-} {
-    return {
-        id: orderItem.id,
-        order_id: orderItem.orderId,
-        product_id: orderItem.productId,
-        quantity: orderItem.quantity
-    }
-}
-
 export const updateOrderItem = async ({
     values
 }: {
     values: UpdateOrderItemInput
 }): Promise<OrderItem> => {
-    // return api.put(`/admin/order-item/${values.id}`, data);
-
-    const { data, error } = await supabase.from('order_item').update(convertToSupabaseOrder(values)).eq('id', values.id).select('*').single()
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return data
+    const response = await api.put(`/order-item/${values.id}`, values)
+    return response.data
 }
 
 type UseUpdateOrderItemOptions = {

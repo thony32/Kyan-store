@@ -1,11 +1,10 @@
 import { api } from '@/libs/api-client'
 import type { MutationConfig } from '@/libs/react-query'
+import { useOrderStore } from '@/store/order-store'
 import type { Order } from '@/types/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '@/libs/supabase-client'
 import { v4 as uuidv4 } from 'uuid'
 import { getOrderQueryOptions } from './get-order'
-import { useOrderStore } from '@/store/order-store'
 
 // TODO: We don't need the orderId while using the api
 
@@ -37,60 +36,17 @@ export const createUpdateOrder = async ({
 }: {
     values: CreateUpdateOrderInput
 }): Promise<Order[]> => {
-    // const data = await api.post("/order/create-or-udate", data);
-    // return [data];
+    const data = await api.post('/order/create-or-update', values)
 
-    // supabase
     const transformOrderData = (data: any): Order => ({
         ...data,
         order_items: data.order_items.map((item: any) => ({
             ...item,
-            product_name: item.product.name,
-            price: item.product.price
+            product_name: item.product_name,
+            price: item.product_price
         }))
     })
-
-    const handleResponse = (data: any): Order[] => {
-        if (data?.order) {
-            const order = transformOrderData(data.order)
-            return [order]
-        }
-        return []
-    }
-
-    let supabaseQuery: any
-
-    if (!values.orderItems[0].orderId) {
-        supabaseQuery = supabase
-            .from('customer_order')
-            .insert({
-                id: uuidv4(),
-                order_date: new Date().toISOString(),
-                status: 'PENDING',
-                total_amount: 0,
-                user_id: values.userId
-            })
-            .select('*')
-            .single()
-    } else {
-        supabaseQuery = supabase.from('customer_order').select('*').eq('id', values.orderItems[0].orderId).single()
-    }
-
-    const { data: fetchedData, error: fetchedError } = await supabaseQuery
-
-    if (fetchedError) throw new Error(fetchedError.message)
-
-    const { data, error } = await supabase
-        .from('order_item')
-        .insert({ ...convertToSupabaseOrder(values), order_id: fetchedData.id })
-        .select('order:customer_order(*, order_items:order_item(*, product:product_id(name, price)))')
-        .single()
-
-    if (error) {
-        throw new Error(error.message)
-    }
-
-    return handleResponse(data)
+    return [transformOrderData(data)]
 }
 
 type UseCreateUpdateOrderOptions = {
