@@ -3,13 +3,16 @@ import { useChatStore } from '@/store/chat-store'
 import type { Chat } from '@/types/api'
 import { useMutation } from '@tanstack/react-query'
 
+// NOTE: IF USING RASA, THEN USE THIS URL: 'http://192.168.89.9:5005/webhooks/rest/webhook'
+
 export const sendMessage = async ({
     message
 }: {
     message: string
-}): Promise<Chat[]> => {
+}): Promise<Chat> => {
+    // }): Promise<Chat[]> => { pour RASA
     try {
-        const response = await fetch('http://192.168.89.9:5005/webhooks/rest/webhook', {
+        const response = await fetch(import.meta.env.VITE_BOT_API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sender: 'user', message })
@@ -20,10 +23,11 @@ export const sendMessage = async ({
             throw new Error(`Error: ${response.status} ${response.statusText}`)
         }
 
-        const data: Chat[] = await response.json()
+        const data: Chat = await response.json()
 
         // Check if data is empty or invalid
-        if (!data || !data.length) {
+        // if (!data || !data.length) { pour RASA
+        if (!data) {
             throw new Error('Erreur, aucune réponse reçue. Veuillez réessayer.')
         }
 
@@ -45,7 +49,10 @@ export const useChat = ({ mutationConfig }: UseChatOptions) => {
     return useMutation({
         onSuccess: (...args) => {
             const [data] = args
-            data.forEach((chatResponse) => setChat({ text: chatResponse.text, isBot: true }))
+            // data.forEach((chatResponse) =>
+            //   setChat({ text: chatResponse.text, isBot: true }),
+            // );
+            setChat({ text: data.text, isBot: true })
 
             onSuccess?.(...args)
         },
