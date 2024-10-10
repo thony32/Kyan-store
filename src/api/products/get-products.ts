@@ -1,3 +1,4 @@
+// FIXME: null ilay image_id sy image_url an ilay product
 import { api } from '@/libs/api-client'
 import type { QueryConfig } from '@/libs/react-query'
 import type { Product } from '@/types/api'
