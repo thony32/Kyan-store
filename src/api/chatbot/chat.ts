@@ -3,13 +3,10 @@ import { useChatStore } from '@/store/chat-store'
 import type { Chat } from '@/types/api'
 import { useMutation } from '@tanstack/react-query'
 
-// NOTE: IF USING RASA, THEN USE THIS URL: 'http://192.168.89.9:5005/webhooks/rest/webhook'
-
 export const sendMessage = async ({
     message
 }: {
     message: string
-    // }): Promise<Chat> => {
 }): Promise<Chat[]> => {
     try {
         const response = await fetch('http://192.168.89.9:5005/webhooks/rest/webhook', {
@@ -27,7 +24,6 @@ export const sendMessage = async ({
 
         // Check if data is empty or invalid
         if (!data || !data.length) {
-            // if (!data) {
             throw new Error('Erreur, aucune réponse reçue. Veuillez réessayer.')
         }
 
@@ -50,7 +46,6 @@ export const useChat = ({ mutationConfig }: UseChatOptions) => {
         onSuccess: (...args) => {
             const [data] = args
             data.forEach((chatResponse) => setChat({ text: chatResponse.text, isBot: true }))
-            // setChat({ text: data.text, isBot: true })
 
             onSuccess?.(...args)
         },
