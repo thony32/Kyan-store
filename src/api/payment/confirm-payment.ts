@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 export const confirmPayment = async ({
     paymentId
 }: {
-    paymentId?: string
+    paymentId: string | null
 }) => {
     return api.put(`/payment/${paymentId}/confirm`)
 }

@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 
 export const payOrder = async (orderId: string): Promise<string> => {
     const response = await api.post('/payment', { orderId, paymentMethod: 'credit_card' })
-    console.log(response.data)
     return response.data.payment_id
 }
 

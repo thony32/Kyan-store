@@ -69,7 +69,7 @@ const PaymentPage = () => {
                     </div>
 
                     {/* NOTE: Right Section: Payment Form */}
-                    <PaymentForm user={user} paymentId={paymentId} orderId={order[0].id} amount={getSubtotal} />
+                    <PaymentForm user={user} paymentId={paymentId} />
                 </>
             ) : null}
         </div>

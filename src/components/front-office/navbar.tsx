@@ -1,4 +1,6 @@
 import { useLogoutMutation } from '@/api/auth'
+import { useOrder } from '@/api/order/get-order'
+import { getProductsQueryOptions } from '@/api/products/get-products'
 import SearchIllustration from '@/components/misc/search-illustration'
 import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -11,21 +13,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useOrderStore } from '@/store/order-store'
+import { useViewItemStore } from '@/store/view-item-store'
+import type { Product } from '@/types/api'
 import { cn } from '@/utils/cn'
+import getDiscountAmount from '@/utils/get-discount-amount'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { LayoutGrid, LogInIcon, LogOutIcon, SearchIcon, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import AuthDialog from './auth-dialog'
-import { useQueryClient } from '@tanstack/react-query'
-import type { Product } from '@/types/api'
-import { getProductsQueryOptions } from '@/api/products/get-products'
-import getDiscountAmount from '@/utils/get-discount-amount'
-import { useViewItemStore } from '@/store/view-item-store'
-import { useDebounce } from '@/hooks/use-debounce'
-import { useOrder } from '@/api/order/get-order'
-import { useOrderStore } from '@/store/order-store'
 
 export default function Navbar() {
     const user = useAuthStore((state) => state.user)
@@ -38,7 +38,7 @@ export default function Navbar() {
 
     useEffect(() => {
         if (status === 'success' && items?.length > 0) {
-            setOrder(items[0])
+            setOrder(items.filter((order) => order.status === 'PENDING')[0])
         }
     }, [status, items])
 

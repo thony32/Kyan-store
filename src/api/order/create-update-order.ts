@@ -20,18 +20,9 @@ export const createUpdateOrder = async ({
     values
 }: {
     values: CreateUpdateOrderInput
-}): Promise<Order[]> => {
+}): Promise<Order> => {
     const data = await api.post('/order/create-or-update', values)
-
-    const transformOrderData = (data: any): Order => ({
-        ...data,
-        order_items: data.order_items.map((item: any) => ({
-            ...item,
-            product_name: item.product_name,
-            price: item.product_price
-        }))
-    })
-    return [transformOrderData(data)]
+    return data.data
 }
 
 type UseCreateUpdateOrderOptions = {
@@ -51,7 +42,7 @@ export const useCreateUpdateOrder = ({ userId, mutationConfig }: UseCreateUpdate
             queryClient.invalidateQueries({
                 queryKey: getOrderQueryOptions(userId).queryKey
             })
-            setOrder(data[0])
+            setOrder(data)
             onSuccess?.(...args)
         },
         onError: (error) => {

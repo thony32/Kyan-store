@@ -1,19 +1,15 @@
 import { useConfirmPayment } from '@/api/payment/confirm-payment'
+import type { User } from '@/types/api'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import type { User } from '@/types/api'
 
 const PaymentForm = ({
     user,
-    paymentId,
-    orderId,
-    amount
+    paymentId
 }: {
     user: User
     paymentId: string | null
-    orderId: string
-    amount: number
 }) => {
     const confirmPaymentMutation = useConfirmPayment({ userId: user.id })
 
@@ -70,7 +66,7 @@ const PaymentForm = ({
 
                 {/* NOTE: Payment Button */}
                 <Button
-                    onClick={() => confirmPaymentMutation.mutate({ paymentId, orderId, amount })}
+                    onClick={() => confirmPaymentMutation.mutate({ paymentId })}
                     disabled={confirmPaymentMutation.isPending}
                     type="button"
                     className="w-full bg-blue-500 text-white py-2"
