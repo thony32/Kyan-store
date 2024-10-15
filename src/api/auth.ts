@@ -1,6 +1,7 @@
 import { api } from '@/libs/api-client'
 import { useAuthDialogStore } from '@/store/auth-dialog-store'
 import { useAuthStore } from '@/store/auth-store'
+import { useOrderStore } from '@/store/order-store'
 import type { AuthResponse } from '@/types/api'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -93,11 +94,13 @@ export const useRegisterMutation = () => {
 
 const clearAuth = useAuthStore.getState().clearAuth
 export const useLogoutMutation = () => {
+    const setOrder = useOrderStore.getState().setOrder
     return useMutation({
         mutationFn: logout,
         mutationKey: ['logout'],
         onSuccess: () => {
             toast.success('Deconnecté avec succès!')
+            setOrder(null)
             clearAuth()
         },
         onError: (error) => {
