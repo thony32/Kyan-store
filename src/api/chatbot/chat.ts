@@ -9,7 +9,7 @@ export const sendMessage = async ({
     message: string
 }): Promise<Chat[]> => {
     try {
-        const response = await fetch('http://192.168.89.9:5005/webhooks/rest/webhook', {
+        const response = await fetch('http://192.168.43.124:5005/webhooks/rest/webhook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sender: 'user', message })

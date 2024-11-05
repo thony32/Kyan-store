@@ -1,14 +1,14 @@
 import { api } from '@/libs/api-client'
 import { useQuery } from '@tanstack/react-query'
 
-export const getSupabaseUser = async () => {
+export const getUsers = async () => {
     const response = await api.get('/admin/customer')
     return response.data
 }
 
 export const getOrderQueryOptions = () => ({
     queryKey: ['_user'],
-    queryFn: getSupabaseUser
+    queryFn: getUsers
 })
 
 export const useAllUsers = () => {

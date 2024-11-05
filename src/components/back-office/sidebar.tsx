@@ -8,7 +8,7 @@ const Sidebar = () => {
                 <div>
                     {/* Logo */}
                     <div className="px-8">
-                        <Link to="/admin/dashboard">
+                        <Link to="/">
                             <svg className="w-20 h-20" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M27.472 40H12.928C12.9238 36.6294 11.5829 33.398 9.19953 31.0146C6.81611 28.6312 3.58471 27.2902 0.21405 27.286V12.742C15.244 12.742 27.472 24.97 27.472 40Z"

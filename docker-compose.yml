@@ -1,0 +1,21 @@
+services:
+    postgres:
+        image: "postgres:latest"
+        container_name: postgres
+        environment:
+            POSTGRES_DB: "database"
+            POSTGRES_USER: "root"
+            POSTGRES_PASSWORD: "zerovalo"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        restart: always
+
+networks:
+    db:
+        driver: bridge
+
+volumes:
+    pgdata:
+        driver: local
